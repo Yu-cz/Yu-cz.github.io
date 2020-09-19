@@ -143,6 +143,86 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-CentOS客制化镜像制作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/">CentOS客制化镜像制作</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/" class="archive-article-date">
+  	<time datetime="2020-09-19T16:07:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于某些原因，需要在<code>CentOS</code>镜像中安装一些开发环境</p>
+<p>网上查询一番，相比于<code>Ubuntu</code>, <code>CentOS</code>系统客制化相关的资料不多，质量也不高。折腾一番，也踩了不少坑，总算将镜像做完。</p>
+<p>现在将客制化的步骤整理如下，希望能帮到需要的人</p>
+<p>参考视频链接:  <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=_LobCfU_uIY">https://www.youtube.com/watch?v=_LobCfU_uIY</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 1. 挂载镜像</span></span><br><span class="line">sudo mount -o loop CentOS-7-x86_64-LiveGNOME-1810.iso /mnt</span><br><span class="line">mkdir tmp</span><br><span class="line">cd tmp</span><br><span class="line">mkdir iso</span><br><span class="line"><span class="meta">#</span><span class="bash"> 2. 将镜像里的所有文件拷贝到本地</span></span><br><span class="line">cp -rfp /mnt/* iso/.</span><br><span class="line">cd iso/LiveOS/</span><br><span class="line">su root</span><br><span class="line"><span class="meta">#</span><span class="bash"> 3. 将img镜像解压</span></span><br><span class="line">unsquashfs squashfs.img</span><br><span class="line">cd squshfs-root/LiveOS/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 4. (可选)扩充ext3fs.img的大小,默认是8G,因为后面安装gcc需要用到3G,会导致空间不够,所以扩充大小至12G</span></span><br><span class="line">e2fsck -f ./ext3fs.img</span><br><span class="line">resize2fs ext3fs.img 12000M</span><br><span class="line">mkdir ext3fs</span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 挂载 ext3fs.img</span></span><br><span class="line">mount -o loop ext3fs.img ext3fs</span><br><span class="line">cd ext3fs/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 6. (可选)将本机的网络设置,软件安装源文件拷贝到镜像里,避免无法使用yum安装软件</span></span><br><span class="line">cp /etc/resolv.conf etc/</span><br><span class="line">cp /etc/hosts etc/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 7.将当前目录当做根目录,后面就可以在里面安装需要的东西了</span></span><br><span class="line">chroot .</span><br><span class="line"><span class="meta">#</span><span class="bash"> 8. 在当前环境中装自己想要的软件，装完后会保存到镜像里</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ...</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 9. 安装结束后,退出</span></span><br><span class="line">exit</span><br><span class="line">cd ..</span><br><span class="line"><span class="meta">#</span><span class="bash"> 10. 卸载和删除掉一些中间文件</span></span><br><span class="line">umount ext3fs</span><br><span class="line">rm -rf ext3fs</span><br><span class="line">cd ../..</span><br><span class="line">rm -rf squashfs.img</span><br><span class="line"><span class="meta">#</span><span class="bash"> 11. 重新生成squshfs.img</span></span><br><span class="line">mksquashfs squashfs-root/ squashfs.img -noappend -always-use-fragments</span><br><span class="line"><span class="meta">#</span><span class="bash"> 12. 删除中间文件</span></span><br><span class="line">rm -rf squashfs-root/</span><br><span class="line">cd ..</span><br><span class="line"><span class="meta">#</span><span class="bash"> 制作镜像,/media/custom_iso2.iso是生成的iso的保存路径,注意最后面的<span class="string">&quot;CentOS-7-x86_64-LiveGNOME-1810&quot;</span>不能改,否则会导致启动不了</span></span><br><span class="line">mkisofs -o /media/custom_iso2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat --no-emul-boot --boot-load-size 4 --boot-info-table -R -J -v -T -V &quot;CentOS-7-x86_64-LiveGNOME-1810&quot; .</span><br></pre></td></tr></table></figure>
+
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">其他</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-失效的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -437,6 +517,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Python踩坑记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">其他</a>
               </li>
             
             <div class="clearfix"></div>
