@@ -344,6 +344,33 @@
 
 
   
+    <section id="comments" class="comments">
+      <style>
+        .comments{margin:30px;padding:10px;background:#fff}
+        @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+      </style>
+      <div id="vcomment" class="comment"></div> 
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'true' == true ? true : false;
+   var verify = 'true' == true ? true : false;
+    window.onload = function() {
+        new Valine({
+            el: '.comment',
+            notify: notify,
+            verify: verify,
+            app_id: "GEbkfWdFeTPVcMleIckNzdwS-gzGzoHsz",
+            app_key: "ubr3qslQqDknmhRMhRuLXmoX",
+            placeholder: "表扬批评，都很欢迎. 知我罪我 一任诸君",
+            avatar:"retro"
+        });
+    }
+</script>
+
+  </section>
+
+  
   <div class="duoshuo">
 	<!-- 多说评论框 start -->
 	<div class="ds-thread" data-thread-key="失效的单例模式" data-title="失效的单例模式" data-url="http://example.com/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/"></div>
