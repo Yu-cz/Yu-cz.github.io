@@ -143,6 +143,174 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Bottle-route-源码分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle route 源码分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-10-31T09:27:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简书上为首发，拒绝抄袭，原文地址 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a4a50c0b7ea7">https://www.jianshu.com/p/a4a50c0b7ea7</a></p>
+<h3 id="Bottle-Route"><a href="#Bottle-Route" class="headerlink" title="Bottle Route"></a>Bottle Route</h3><p>route 的常规使用场景分成如下三个场景进行分析</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第一种　简单的 / 和 字符的组合,函数不包含参数</span></span><br><span class="line"><span class="meta">@route(&#x27;/hello_world&#x27;)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span>():</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World!&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二种 包含 :指定名字</span></span><br><span class="line"><span class="meta">@route(&#x27;/hello/:name&#x27;)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_url</span>(<span class="params">name</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello %s!&#x27;</span> % name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第三种 包含 :指定名字 #xxxx#</span></span><br><span class="line"><span class="meta">@route(&#x27;/number/:num#[0-9]+#&#x27;)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_number</span>(<span class="params">num</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Your number is %d&quot;</span> % int(num)</span><br></pre></td></tr></table></figure>
+
+<h5 id="1-route-装饰器的实现"><a href="#1-route-装饰器的实现" class="headerlink" title="1 route 装饰器的实现"></a>1 route 装饰器的实现</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">route</span>(<span class="params">url, **kargs</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; Decorator for request handler. Same as add_route(url, handler).&quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span>(<span class="params">handler</span>):</span></span><br><span class="line">        add_route(url, handler, **kargs)</span><br><span class="line">        <span class="keyword">return</span> handler</span><br><span class="line">    <span class="keyword">return</span> wrapper</span><br></pre></td></tr></table></figure>
+
+<p>由代码可见, <code>route</code>装饰器返回的函数其实还是函数本身，装饰器唯一的作用就是调用 <code>add_route</code> 函数，将当前的路径和函数绑定在一起</p>
+<h5 id="2-add-route的实现"><a href="#2-add-route的实现" class="headerlink" title="2  add_route的实现"></a>2  add_route的实现</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ROUTES_SIMPLE = &#123;&#125;</span><br><span class="line">ROUTES_REGEXP = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_route</span>(<span class="params">route, handler, method=<span class="string">&#x27;GET&#x27;</span>, simple=False</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; Adds a new route to the route mappings.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        Example:</span></span><br><span class="line"><span class="string">        def hello():</span></span><br><span class="line"><span class="string">          return &quot;Hello world!&quot;</span></span><br><span class="line"><span class="string">        add_route(r&#x27;/hello&#x27;, hello)&quot;&quot;&quot;</span></span><br><span class="line">    method = method.strip().upper()</span><br><span class="line">    <span class="keyword">if</span> re.match(<span class="string">r&#x27;^/(\w+/)*\w*$&#x27;</span>, route) <span class="keyword">or</span> simple:</span><br><span class="line">        ROUTES_SIMPLE.setdefault(method, &#123;&#125;)[route] = handler</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        route = compile_route(route)</span><br><span class="line">        ROUTES_REGEXP.setdefault(method, []).append([route, handler])</span><br></pre></td></tr></table></figure>
+
+<p>先看下正则表达式的 <code>r&#39;^/(\w+/)*\w*$&#39;</code>，匹配规则简单分析如下</p>
+<ul>
+<li>匹配以 <code>/</code> 开头的字符串</li>
+<li>中间可以有0个多个 <code>\w+/</code>，即多个类似如下的字符: <code>aa/bb/cc/</code></li>
+<li>最后以0个或者多个普通字符结尾</li>
+</ul>
+<p>所以当调用 <code>route()</code>,参数如下时会匹配上</p>
+<ul>
+<li><code>/</code></li>
+<li><code>/hello_world</code></li>
+<li><code>/hello/aa/bb/cc</code></li>
+</ul>
+<p>而匹配上后，<code>add_route</code>函数的就只是将其放在 <code>ROUTES_SIMPLE</code> 中，key 为我们传递进来的字符串，value 为被装饰的函数</p>
+<h5 id="3-再看下当我们客户端发起访问的时候，我们服务端是怎么调用相应的函数的"><a href="#3-再看下当我们客户端发起访问的时候，我们服务端是怎么调用相应的函数的" class="headerlink" title="3 再看下当我们客户端发起访问的时候，我们服务端是怎么调用相应的函数的"></a>3 再看下当我们客户端发起访问的时候，我们服务端是怎么调用相应的函数的</h5><p>先看下 <code>WSGI</code> 统一的接口 <code>WSGIHandler</code>，当客户端发起访问请求的时候，都会进到这个函数里面，而客户端请求的所有信息都包含在 <code>environ</code>参数里面，包括</p>
+<ul>
+<li>请求的路径</li>
+<li>请求的方式 GET/POST 等</li>
+<li>cookie</li>
+<li>等等</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">WSGIHandler</span>(<span class="params">environ, start_response</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;The bottle WSGI-handler.&quot;&quot;&quot;</span></span><br><span class="line">    globalfjhvvi request</span><br><span class="line">    <span class="keyword">global</span> response</span><br><span class="line">    request.bind(environ)</span><br><span class="line">    response.bind()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        handler, args = match_url(request.path, request.method)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> handler:</span><br><span class="line">            <span class="keyword">raise</span> HTTPError(<span class="number">404</span>, <span class="string">&quot;Not found&quot;</span>)</span><br><span class="line">        <span class="comment"># 如果找到了路径对应的函数，则调用该函数，返回函数的执行结果</span></span><br><span class="line">        output = handler(**args)</span><br><span class="line">    <span class="keyword">except</span> BreakTheBottle, shard: </span><br><span class="line">        <span class="comment"># 省略下面的代码</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>当我们从客户端的请求中获取路径path和方法method后，则调用<code>match_url</code> 来确定要调用那个函数</p>
+<p><code>match_url</code> 的实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">match_url</span>(<span class="params">url, method=<span class="string">&#x27;GET&#x27;</span></span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Returns the first matching handler and a parameter dict or (None, None).</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    This reorders the ROUTING_REGEXP list every 1000 requests. To turn this off, use OPTIMIZER=False&quot;&quot;&quot;</span></span><br><span class="line">    url = <span class="string">&#x27;/&#x27;</span> + url.strip().lstrip(<span class="string">&quot;/&quot;</span>)</span><br><span class="line">    <span class="comment"># Search for static routes first</span></span><br><span class="line">    route = ROUTES_SIMPLE.get(method,&#123;&#125;).get(url,<span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">if</span> route:</span><br><span class="line">      <span class="keyword">return</span> (route, &#123;&#125;)</span><br><span class="line">	<span class="comment"># 先省略下面的代码，下面的代码是用来匹配包含正则表达式的路径的</span></span><br></pre></td></tr></table></figure>
+
+<p>根据代码分析，当我们传递进来的 <code>url</code> 再 <code>ROUTES_SIMPLE</code> 中找到的话，则直接返回该函数和一个空字典。</p>
+<p>所以当我们访问 <code>http://localhost:8081/hello_world</code>时，会直接调用函数 <code>hello_world</code>, 然后在浏览器中显示该函数的执行的返回值 <code>&#39;Hello World!&#39;</code></p>
+<h5 id="3-包含正则的路径"><a href="#3-包含正则的路径" class="headerlink" title="3 包含正则的路径"></a>3 包含正则的路径</h5><p>如果传递进来的路径不是第一种路径的话，那么将会执行 <code>compile_route</code> ，进行匹配，代码实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compile_route</span>(<span class="params">route</span>):</span>bcdaui</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Compiles a route string and returns a precompiled RegexObject.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Routes may contain regular expressions with named groups to support url parameters.</span></span><br><span class="line"><span class="string">    Example: &#x27;/user/(?P&lt;id&gt;[0-9]+)&#x27; will match &#x27;/user/5&#x27; with &#123;&#x27;id&#x27;:&#x27;5&#x27;&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    A more human readable syntax is supported too.</span></span><br><span class="line"><span class="string">    Example: &#x27;/user/:id/:action&#x27; will match &#x27;/user/5/kiss&#x27; with &#123;&#x27;id&#x27;:&#x27;5&#x27;, &#x27;action&#x27;:&#x27;kiss&#x27;&#125;</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    oritin_route = route</span><br><span class="line">    <span class="comment"># 什么时候左边会出现 $^/</span></span><br><span class="line">    <span class="comment"># 右边会出现 $^</span></span><br><span class="line">    route = route.strip().lstrip(<span class="string">&#x27;$^/ &#x27;</span>).rstrip(<span class="string">&#x27;$^ &#x27;</span>)</span><br><span class="line">    route = re.sub(<span class="string">r&#x27;:([a-zA-Z_]+)(?P&lt;uniq&gt;[^\w/])(?P&lt;re&gt;.+?)(?P=uniq)&#x27;</span>,<span class="string">r&#x27;(?P&lt;\1&gt;\g&lt;re&gt;)&#x27;</span>,route)</span><br><span class="line">    second_route = route</span><br><span class="line">    route = re.sub(<span class="string">r&#x27;:([a-zA-Z_]+)&#x27;</span>,<span class="string">r&#x27;(?P&lt;\1&gt;[^/]+)&#x27;</span>, route)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">&#x27;origin route:\t&#x27;</span>, oritin_route, <span class="string">&#x27;\tsecond route:&#x27;</span>, second_route,  <span class="string">&#x27;\tcompile route:&#x27;</span>, route</span><br><span class="line">    <span class="keyword">return</span> re.compile(<span class="string">&#x27;^/%s$&#x27;</span> % route)</span><br></pre></td></tr></table></figure>
+
+<p>这里面包含两条正则表达式</p>
+<ol>
+<li><code>:([a-zA-Z_]+)(?P&lt;uniq&gt;[^\w/])(?P&lt;re&gt;.+?)(?P=uniq)</code></li>
+<li><code>:([a-zA-Z_]+)&#39;,r&#39;(?P&lt;\1&gt;[^/]+)</code></li>
+</ol>
+<h5 id="4-对第一条正则进行分析"><a href="#4-对第一条正则进行分析" class="headerlink" title="4 对第一条正则进行分析"></a>4 对第一条正则进行分析</h5><p>当我们注册route时，传递的参数为 <code>@route(&#39;/hello/:name&#39;)</code>，不会匹配上第一个正则，所以先不看这个正则。它会匹配第二个正则。我们先对第二个正则进行一个简单的分析</p>
+<p><code>:([a-zA-Z_]+)</code>会匹配以 <code>:</code> 开头，包含多个字母的字符串</p>
+<p>所以 <code>:name</code> 会被匹配到</p>
+<p>匹配到之后，会调用 <code>re.sub(:([a-zA-Z_]+)&#39;,r&#39;(?P&lt;\1&gt;[^/]+))</code></p>
+<p>调用<code>re.sub</code>,时，正则匹配到的第一个组（简单的说，就是原字符串第一个括号里的内容，即 [a-zA-Z_]), 匹配到的是 <code>name</code>, 将替换到第二个字符串的 <code>\1</code>, 则替换后的字符为 <code>(?P&lt;name&gt;[^/]+)</code>,</p>
+<p>测试如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">route = <span class="string">&quot;hello/:name&quot;</span></span><br><span class="line">route = re.sub(<span class="string">r&#x27;:([a-zA-Z_]+)&#x27;</span>, <span class="string">r&#x27;(?P&lt;\1&gt;[^/]+)&#x27;</span>, route)</span><br><span class="line">print(route)</span><br></pre></td></tr></table></figure>
+
+<p>输出为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello&#x2F;(?P&lt;name&gt;[^&#x2F;]+)</span><br></pre></td></tr></table></figure>
+
+<p>假设我们输入的是 <code>hello/:name</code> ,则经过 <code>re.sub</code>替换之后，将变成<code>hello/(?P&lt;name&gt;[^/]+)</code></p>
+<p>在 <code>compile_route</code> 的最后一条代码<code>re.compile(&#39;^/%s$&#39; % route)</code></p>
+<p>所以，最终进入编译的正则表达式为 <code>^/hello/(?P&lt;name&gt;[^/]+)</code>，然后被存进 <code>ROUTES_REGEXP</code>里</p>
+<p>而<code>hello/(?P&lt;name&gt;[^/]+)</code>将会匹配的语句如下</p>
+<ul>
+<li>以<code>/hello/</code> 开头</li>
+<li>后面接着1个或者多个不为 <code>/</code> 的字符，并切这些字符将会被放到正则的 group 中，通过字段name可拿到</li>
+</ul>
+<p>比如</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> [<span class="number">9</span>]: pattern = <span class="string">r&quot;^/hello/(?P&lt;name&gt;[^/]+)&quot;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: m = re.match(pattern=pattern, string=<span class="string">&quot;/hello/messi&quot;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: m.groupdict()</span><br><span class="line">Out[<span class="number">11</span>]: &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;messi&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当客户端发起请求，链接为 <code>/hello/messi</code>时，则会进入 <code>match_url</code>, 代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">match_url</span>(<span class="params">url, method=<span class="string">&#x27;GET&#x27;</span></span>):</span></span><br><span class="line">   <span class="comment"># 前面的省略</span></span><br><span class="line">   <span class="comment"># Now search regexp routes</span></span><br><span class="line">    routes = ROUTES_REGEXP.get(method,[])</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(len(routes)):</span><br><span class="line">        match = routes[i][<span class="number">0</span>].match(url)</span><br><span class="line">        <span class="keyword">if</span> match:</span><br><span class="line">            handler = routes[i][<span class="number">1</span>]</span><br><span class="line">            <span class="comment"># 省略不相干代码</span></span><br><span class="line">            <span class="keyword">return</span> (handler, match.groupdict())</span><br><span class="line">    <span class="keyword">return</span> (<span class="literal">None</span>, <span class="literal">None</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在匹配时，会将我们注册进 <code>ROUTES_REGEXP</code> 的每一条正则进行一个遍历，当匹配上的时候，返回对应的函数，以及正则匹配后的 <code>groupdict()</code>, 这个将会当做函数的 <code>args</code> ,进行调用</p>
+<p>再看下另一个例子</p>
+<p><code>@route(/validate/:i/:f/:csv)</code></p>
+<p>经过 <code>compile_route</code> 之后，会替换成 <code>^/validate/(?P&lt;i&gt;[^/]+)/(?P&lt;f&gt;[^/]+)/(?P&lt;csv&gt;[^/]+)$</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">13</span>]: pattern = <span class="string">r&quot;^/validate/(?P&lt;i&gt;[^/]+)/(?P&lt;f&gt;[^/]+)/(?P&lt;csv&gt;[^/]+)$&quot;</span></span><br><span class="line">In [<span class="number">14</span>]: s = <span class="string">&quot;/validate/aaa/bbb/ccc&quot;</span></span><br><span class="line">In [<span class="number">15</span>]: m = re.match(pattern, s)</span><br><span class="line">In [<span class="number">16</span>]: m</span><br><span class="line">Out[<span class="number">16</span>]: &lt;_sre.SRE_Match object; span=(<span class="number">0</span>, <span class="number">21</span>), match=<span class="string">&#x27;/validate/aaa/bbb/ccc&#x27;</span>&gt;</span><br><span class="line">In [<span class="number">17</span>]: m.groupdict()</span><br><span class="line">Out[<span class="number">17</span>]: &#123;<span class="string">&#x27;csv&#x27;</span>: <span class="string">&#x27;ccc&#x27;</span>, <span class="string">&#x27;f&#x27;</span>: <span class="string">&#x27;bbb&#x27;</span>, <span class="string">&#x27;i&#x27;</span>: <span class="string">&#x27;aaa&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="再看第二条正则表达式"><a href="#再看第二条正则表达式" class="headerlink" title="再看第二条正则表达式"></a>再看第二条正则表达式</h5><p><code>:([a-zA-Z_]+)(?P&lt;uniq&gt;[^\w/])(?P&lt;re&gt;.+?)(?P=uniq)</code></p>
+<p>当我们注册 route 的参数为 <code>@route(&#39;/number/:num#[0-9]+#&#39;)</code>, 则会匹配到这一个正则表达式</p>
+<ul>
+<li><code>:([a-zA-Z_]+)</code>匹配 <code>:</code>后面跟上字母和下划线的组合，对应的就是 <code>:num</code> 并且会将 <code>num</code>放进正则匹配的第一组</li>
+<li><code>(?P&lt;uniq&gt;[^\w/])</code>匹配一个不为 <code>\w</code>(即正常字符) 和 <code>/</code> 的一个字符，对应的就是 <code>#</code> 号，并将这个 <code>#</code> 放进组 <code>uniq</code>中</li>
+<li><code>(?P&lt;re&gt;.+?)</code>则为<code>.+</code> 标识匹配一个或者多个任意字符 <code>.+?</code> 则标识惰性匹配，匹配到最少符合这个格式的字符串。并将匹配完后的字符串放进组 <code>re</code> 中,对应的就是 <code>[0-9]+</code></li>
+<li><code>(?P=uniq)</code>表示匹配到的字符串要跟第二部中的一样，假设第二步中匹配到的是 <code>#</code>，则这一步也必须要为 <code>#</code></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">18</span>]: pattern1 = <span class="string">r&quot;(?P&lt;uniq&gt;[^\w\/])(?P&lt;re&gt;.+?)(?P=uniq)&quot;</span> <span class="comment"># 惰性匹配</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">19</span>]: pattern2 = <span class="string">r&quot;(?P&lt;uniq&gt;[^\w\/])(?P&lt;re&gt;.+)(?P=uniq)&quot;</span> <span class="comment"># 贪婪匹配</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">20</span>]: s = <span class="string">&quot;#123##&quot;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">21</span>]: m1 = re.match(pattern1, s)</span><br><span class="line"></span><br><span class="line">In [<span class="number">22</span>]: m1.groupdict()</span><br><span class="line">Out[<span class="number">22</span>]: &#123;<span class="string">&#x27;re&#x27;</span>: <span class="string">&#x27;123&#x27;</span>, <span class="string">&#x27;uniq&#x27;</span>: <span class="string">&#x27;#&#x27;</span>&#125; <span class="comment"># re组不包含 #</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">24</span>]: m2 = re.match(pattern2, s)</span><br><span class="line"></span><br><span class="line">In [<span class="number">25</span>]: m2.groupdict()</span><br><span class="line">Out[<span class="number">25</span>]: &#123;<span class="string">&#x27;re&#x27;</span>: <span class="string">&#x27;123#&#x27;</span>, <span class="string">&#x27;uniq&#x27;</span>: <span class="string">&#x27;#&#x27;</span>&#125; <span class="comment"># re组包含 #</span></span><br></pre></td></tr></table></figure>
+
+<p>匹配完之后，将会调用 <code>re.sub</code>进行正则替换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">route = <span class="string">&quot;/number/:num#[0-9]+#&quot;</span></span><br><span class="line">route = re.sub(<span class="string">r&#x27;:([a-zA-Z_]+)(?P&lt;uniq&gt;[^\w/])(?P&lt;re&gt;.+?)(?P=uniq)&#x27;</span>, <span class="string">r&#x27;(?P&lt;\1&gt;\g&lt;re&gt;)&#x27;</span>, route)</span><br><span class="line">print(route) <span class="comment"># /number/(?P&lt;num&gt;[0-9]+)</span></span><br></pre></td></tr></table></figure>
+
+<p><code>\</code>为我们匹配的第一组即为 <code>num</code></p>
+<p><code>\g&lt;re&gt;</code>则替换组<code>re</code>里的内容即 <code>[0-9]+</code></p>
+<p>所以替换后的字符为 <code>/number/(?P&lt;num&gt;[0-9]+)</code></p>
+<p>所以，这个函数将匹配以 <code>/number/</code> 开头,后面接着多个数字字符的路径</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Bottle 0.4.10 源码学习</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Bottle-Template-源码分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
