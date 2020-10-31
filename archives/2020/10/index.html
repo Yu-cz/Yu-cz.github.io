@@ -6,12 +6,12 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Yu-cz&#39;s Blog</title>
+  <title>Archives: 2020/10 | Yu-cz&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="aaa">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Yu-cz&#39;s Blog">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="http://example.com/archives/2020/10/index.html">
 <meta property="og:site_name" content="Yu-cz&#39;s Blog">
 <meta property="og:description" content="aaa">
 <meta property="og:locale" content="en_US">
@@ -143,140 +143,34 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-Bottle-Template-源码分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
     
-      <header class="article-header">
-        
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2020" class="archive-year">2020</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-10-31T09:21:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
+</a>
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle Template 源码分析</a>
+      <a class="archive-article-title" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle Template 源码分析</a>
     </h1>
   
 
-        
-        <a href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-10-31T09:21:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>简书上为首发，拒绝抄袭，原文地址 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a4a50c0b7ea7">https://www.jianshu.com/p/a4a50c0b7ea7</a></p>
-<h3 id="Bottle-Template"><a href="#Bottle-Template" class="headerlink" title="Bottle Template"></a>Bottle Template</h3><h5 id="1-Bottle-SimpleTemplate-的简单使用场景"><a href="#1-Bottle-SimpleTemplate-的简单使用场景" class="headerlink" title="1 Bottle SimpleTemplate 的简单使用场景"></a>1 Bottle SimpleTemplate 的简单使用场景</h5><ul>
-<li><p>简单的花括号</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>tpl = SimpleTemplate(<span class="string">&#x27;Hello &#123;&#123;name&#125;&#125;!&#x27;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tpl.render(name=<span class="string">&#x27;World&#x27;</span>)</span><br><span class="line"><span class="string">u&#x27;Hello World!&#x27;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>带有 Python 语法关键字的语句</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>template(<span class="string">&#x27;Hello &#123;&#123;name.title() if name else &quot;stranger&quot;&#125;&#125;!&#x27;</span>, name=<span class="literal">None</span>)</span><br><span class="line"><span class="string">u&#x27;Hello stranger!&#x27;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>template(<span class="string">&#x27;Hello &#123;&#123;name.title() if name else &quot;stranger&quot;&#125;&#125;!&#x27;</span>, name=<span class="string">&#x27;mArC&#x27;</span>)</span><br><span class="line"><span class="string">u&#x27;Hello Marc!&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-</li>
-</ul>
-<h5 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h5><p><code>BaseTemplate</code> 基类</p>
-<ul>
-<li>构造函数中传递进来的有两个参数<ul>
-<li>template: 直接传递字符串，保存到</li>
-<li>filename: 传递模板文件的名字，将从该文件中读取所有内容</li>
-</ul>
-</li>
-<li>构造函数中，读取完 template 之后，就进行 <code>self.parse</code>, 将在子类中进行</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseTemplate</span>(<span class="params">object</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, template=<span class="string">&#x27;&#x27;</span>, filename=<span class="string">&#x27;&lt;template&gt;&#x27;</span></span>):</span></span><br><span class="line">        self.source = filename</span><br><span class="line">        <span class="keyword">if</span> self.source != <span class="string">&#x27;&lt;template&gt;&#x27;</span>:</span><br><span class="line">            fp = open(filename)</span><br><span class="line">            template = fp.read()</span><br><span class="line">            fp.close()</span><br><span class="line">        self.parse(template)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse</span>(<span class="params">self, template</span>):</span> <span class="keyword">raise</span> NotImplementedError</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">render</span>(<span class="params">self, **args</span>):</span> <span class="keyword">raise</span> NotImplementedError</span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">find</span>(<span class="params">cls, name</span>):</span></span><br><span class="line">        files = [path % name <span class="keyword">for</span> path <span class="keyword">in</span> TEMPLATE_PATH <span class="keyword">if</span> os.path.isfile(path % name)]</span><br><span class="line">        <span class="keyword">if</span> files:</span><br><span class="line">            <span class="keyword">return</span> cls(filename = files[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">raise</span> TemplateError(<span class="string">&#x27;Template not found: %s&#x27;</span> % repr(name))</span><br></pre></td></tr></table></figure>
-
-<p><code>SimpleTemplate</code> 类</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleTemplate</span>(<span class="params">BaseTemplate</span>):</span></span><br><span class="line"></span><br><span class="line">    re_python = re.compile(<span class="string">r&#x27;^\s*%\s*(?:(if|elif|else|try|except|finally|for|while|with|def|class)|(include.*)|(end.*)|(.*))&#x27;</span>)</span><br><span class="line">    re_inline = re.compile(<span class="string">r&#x27;\&#123;\&#123;(.*?)\&#125;\&#125;&#x27;</span>)</span><br><span class="line">    dedent_keywords = (<span class="string">&#x27;elif&#x27;</span>, <span class="string">&#x27;else&#x27;</span>, <span class="string">&#x27;except&#x27;</span>, <span class="string">&#x27;finally&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse</span>(<span class="params">self, template</span>):</span></span><br><span class="line">        indent = <span class="number">0</span></span><br><span class="line">        strbuffer = []</span><br><span class="line">        code = []</span><br><span class="line">        self.subtemplates = &#123;&#125;</span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">PyStmt</span>(<span class="params">str</span>):</span></span><br><span class="line">            <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span>(<span class="params">self</span>):</span> <span class="keyword">return</span> <span class="string">&#x27;str(&#x27;</span> + self + <span class="string">&#x27;)&#x27;</span></span><br><span class="line">            </span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">flush</span>():</span></span><br><span class="line">            <span class="comment"># 将缓存的 strbuffer 字符拼接起来，添加到 code 中</span></span><br><span class="line">            <span class="comment"># 这样有多行普通字符串，在执行编译代码中时，也只需要执行一条语句，节省时间</span></span><br><span class="line">            <span class="keyword">if</span> len(strbuffer):</span><br><span class="line">                code.append(<span class="string">&quot; &quot;</span> * indent + <span class="string">&quot;stdout.append(%s)&quot;</span> % repr(<span class="string">&#x27;&#x27;</span>.join(strbuffer)))</span><br><span class="line">                code.append(<span class="string">&quot;\n&quot;</span> * len(strbuffer)) <span class="comment"># to preserve line numbers </span></span><br><span class="line">                <span class="keyword">del</span> strbuffer[:]</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> template.splitlines(<span class="literal">True</span>):</span><br><span class="line">            m = self.re_python.match(line)</span><br><span class="line">            <span class="comment"># 包含 % 加 python 关键字的字符串</span></span><br><span class="line">            <span class="keyword">if</span> m:</span><br><span class="line">				<span class="comment"># 先跳过，下面再分析</span></span><br><span class="line">            <span class="keyword">else</span>: </span><br><span class="line">                <span class="comment"># 先跳过，下面再分析</span></span><br><span class="line">        flush()</span><br><span class="line">        self.co = compile(<span class="string">&quot;&quot;</span>.join(code), self.source, <span class="string">&#x27;exec&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">render</span>(<span class="params">self, **args</span>):</span></span><br><span class="line">        <span class="string">&#x27;&#x27;&#x27; Returns the rendered template using keyword arguments as local variables. &#x27;&#x27;&#x27;</span></span><br><span class="line">        args[<span class="string">&#x27;stdout&#x27;</span>] = []</span><br><span class="line">        args[<span class="string">&#x27;_subtemplates&#x27;</span>] = self.subtemplates</span><br><span class="line">        eval(self.co, args, globals())</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(args[<span class="string">&#x27;stdout&#x27;</span>])</span><br></pre></td></tr></table></figure>
-
-<p>先看下 <code>parse</code> 函数的流程</p>
-<h5 id="第一种简单场景的函数流程"><a href="#第一种简单场景的函数流程" class="headerlink" title="第一种简单场景的函数流程"></a>第一种简单场景的函数流程</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>tpl = SimpleTemplate(<span class="string">&#x27;Hello &#123;&#123;name&#125;&#125;!&#x27;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>tpl.render(name=<span class="string">&#x27;World&#x27;</span>)</span><br><span class="line"><span class="string">u&#x27;Hello World!&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>当传递进来的 <code>template</code> 是 <code>Hello &#123;&#123;name&#125;&#125;!</code>,不会匹配到 <code>re_python</code> 这个正则表达式，所以将会执行下面的代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> m:</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">	splits = self.re_inline.split(line) <span class="comment"># text, (expr, text)*</span></span><br><span class="line">    <span class="keyword">if</span> len(splits) == <span class="number">1</span>: <span class="comment"># 不包含 &#123;&#123;&#125;&#125; 的场景</span></span><br><span class="line">        strbuffer.append(line)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        flush()</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, len(splits), <span class="number">2</span>):</span><br><span class="line">            splits[i] = PyStmt(splits[i])</span><br><span class="line">        code.append(<span class="string">&quot; &quot;</span> * indent + <span class="string">&quot;stdout.extend(%s)\n&quot;</span> % repr(splits))</span><br></pre></td></tr></table></figure>
-
-<p>先对正则表达式 <code>\&#123;\&#123;(.*?)\&#125;\&#125;</code> 作一个简单的分析</p>
-<ul>
-<li><p>匹配以 <code>&#123;&#123;`  开头， 和`&#125;&#125;</code>结束的字符串</p>
-</li>
-<li><p>中间的 <code>(.*?)</code> 表示惰性匹配，将匹配最少的结果，如果我们传递进来的是 <code>&#123;&#123;name&#125;&#125;&#125;</code>(右边有三个<code>&#125;</code>) ，那么只会匹配 <code>&#123;&#123;name&#125;&#125;</code>, 不会把最后一个 <code>&#125;</code> 给匹配上</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#贪婪匹配和惰性匹配</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 惰性匹配不会匹配到 &#125;</span></span><br><span class="line">In [<span class="number">4</span>]: re_inline = re.compile(<span class="string">r&#x27;\&#123;\&#123;(.*?)\&#125;\&#125;&#x27;</span>)</span><br><span class="line">In [<span class="number">5</span>]: m = re_inline.match(<span class="string">&quot;&#123;&#123;name&#125;&#125;&#125;&quot;</span>)</span><br><span class="line">In [<span class="number">6</span>]: m.groups()</span><br><span class="line">Out[<span class="number">6</span>]: (<span class="string">&#x27;name&#x27;</span>,)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 贪婪匹配会匹配到 &#125;</span></span><br><span class="line">In [<span class="number">7</span>]: re_inline2 = re.compile(<span class="string">&quot;\&#123;\&#123;(.*)\&#125;\&#125;&quot;</span>)</span><br><span class="line">In [<span class="number">10</span>]: m2 = re_inline2.match(<span class="string">&quot;&#123;&#123;name&#125;&#125;&#125;&quot;</span>)</span><br><span class="line">In [<span class="number">11</span>]: m2.groups()</span><br><span class="line">Out[<span class="number">11</span>]: (<span class="string">&#x27;name&#125;&#x27;</span>,)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-</li>
-</ul>
-<p>再看下<code>xrange(1, len(splits), 2)</code>的用途，</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: re_inline = re.compile(<span class="string">r&#x27;\&#123;\&#123;(.*?)\&#125;\&#125;&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: re_inline.split(<span class="string">&quot;name&quot;</span>)</span><br><span class="line">Out[<span class="number">3</span>]: [<span class="string">&#x27;name&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: re_inline.split(<span class="string">&quot;&#123;&#123;name&#125;&#125;&quot;</span>)</span><br><span class="line">Out[<span class="number">4</span>]: [<span class="string">&#x27;&#x27;</span>, <span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;&#x27;</span>]</span><br><span class="line"><span class="comment"># name 和 age 字段index为1, 3 即 range(1, 5, 2)</span></span><br><span class="line">In [<span class="number">5</span>]: re_inline.split(<span class="string">&quot;My name is &#123;&#123;name&#125;&#125;. I am &#123;&#123;age&#125;&#125; years old.&quot;</span>)</span><br><span class="line">Out[<span class="number">5</span>]: [<span class="string">&#x27;My name is &#x27;</span>, <span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;. I am &#x27;</span>, <span class="string">&#x27;age&#x27;</span>, <span class="string">&#x27; years old.&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: range(<span class="number">1</span>, <span class="number">5</span>, <span class="number">2</span>)</span><br><span class="line">Out[<span class="number">6</span>]: [<span class="number">1</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
-
-<p>如果字段是我们用花括号包起来的话，会调用<code>splits[i] = PyStmt(splits[i])</code>进行处理</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PyStmt</span>(<span class="params">str</span>):</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__repr__</span>(<span class="params">self</span>):</span> <span class="keyword">return</span> <span class="string">&#x27;str(&#x27;</span> + self + <span class="string">&#x27;)&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<p>假设我们传递进来的字符串为</p>
-<p><code>My name is &#123;&#123;name&#125;&#125;. I am &#123;&#123;age&#125;&#125; years old.</code></p>
-<p>经过下面函数处理后</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code.append(<span class="string">&quot; &quot;</span> * indent + <span class="string">&quot;stdout.extend(%s)\n&quot;</span> % repr(splits))</span><br></pre></td></tr></table></figure>
-
-<p>code 的值如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&quot;stdout.extend([&#x27;My name is &#x27;, str(name), &#x27;. I am &#x27;, str(age), &#x27; years old.&#x27;])\n&quot;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>接着会调用 <code>compile</code> 函数，将其编译，等到需要渲染的时候，再执行这段编译好的函数</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.co = compile(<span class="string">&quot;&quot;</span>.join(code), self.source, <span class="string">&#x27;exec&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>接着再看下<code>render</code>函数</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">render</span>(<span class="params">self, **args</span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27; Returns the rendered template using keyword arguments as local variables. &#x27;&#x27;&#x27;</span></span><br><span class="line">    args[<span class="string">&#x27;stdout&#x27;</span>] = []</span><br><span class="line">    args[<span class="string">&#x27;_subtemplates&#x27;</span>] = self.subtemplates</span><br><span class="line">    eval(self.co, args, globals())</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(args[<span class="string">&#x27;stdout&#x27;</span>])</span><br></pre></td></tr></table></figure>
-
-<p>可以看出 <code>code</code> 中的 <code>stdout</code> 其实就是个 <code>[]</code>, 再调用渲染时，其实就是通过 <code>eval</code> 函数执行我们编译后的 <code>self.co</code>, 渲染好的字符串通过 <code>args</code> 传递进去</p>
-<p>下面对整个流程做个分析</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">2</span>]: code = [<span class="string">&quot;stdout.extend([&#x27;My name is &#x27;, str(name), &#x27;. I am &#x27;, str(age), years old.&#x27;])\n&quot;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: co = compile(<span class="string">&quot;&quot;</span>.join(code), <span class="string">&quot;template&quot;</span>, <span class="string">&#x27;exec&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: args = dict()</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: args[<span class="string">&quot;stdout&quot;</span>] = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: args[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;messi&quot;</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: args[<span class="string">&quot;age&quot;</span>] = <span class="number">32</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: eval(co, args, globals())</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: args[<span class="string">&quot;stdout&quot;</span>]</span><br><span class="line">Out[<span class="number">9</span>]: [<span class="string">&#x27;My name is &#x27;</span>, <span class="string">&#x27;messi&#x27;</span>, <span class="string">&#x27;. I am &#x27;</span>, <span class="string">&#x27;32&#x27;</span>, <span class="string">&#x27; years old.&#x27;</span>]</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: <span class="string">&#x27;&#x27;</span>.join(args[<span class="string">&#x27;stdout&#x27;</span>])</span><br><span class="line">Out[<span class="number">10</span>]: <span class="string">&#x27;My name is messi. I am 32 years old.&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>至此，我们就知道 <code>bottle</code> 中 <code>template</code> 的实现了，大体流程图如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">A[遍历template中的一行] --&gt; B(判断是否有符合正则的行数)</span><br><span class="line">B --&gt; |有| C(转成python语句,再添加到code中)</span><br><span class="line">B --&gt; |没有| D(将字符串原样添加进code)</span><br><span class="line">C --&gt; E(对code代码执行compile)</span><br><span class="line">D --&gt; E</span><br><span class="line">E --&gt; F(eval执行编译的代码)</span><br><span class="line">F --&gt; G(读取编译后的输出字符串)</span><br></pre></td></tr></table></figure>
-
-
-
-<h5 id="包含Python语法的字符串"><a href="#包含Python语法的字符串" class="headerlink" title="包含Python语法的字符串"></a>包含Python语法的字符串</h5><p>先看下正则表达式</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">r&#x27;^\s*%\s*(?:(if|elif|else|try|except|finally|for|while|with|def|class)|(include.*)|(end.*)|(.*))&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>分析如下</p>
-<ol>
-<li>以0个或者多个 <code>\s</code>(空字符) 开头，<strong>后面接着一个 <code>%</code></strong> ,后面在接着 0个或者多个<code>\s</code>字符</li>
-<li>第一个大括号 <code>?:(n)</code> 为非捕获括号，表示匹配任何其后紧接指定字符串 n 的字符串，所以这个大组并没有编号，当我们后面匹配时<code>m.groups()[0]</code> 并不是这个大括号</li>
-<li>再对大括号里面的四个括号进行分析。四个括号之间使用 <code>|</code> 隔开，说明只要一行字符串中，有包含其中一个字段即可匹配<ol>
-<li>第一个括号，即第一组，匹配 python 关键字<code>if|elif|else|try|except|finally|for|while|with|def|class</code></li>
-<li>第二个括号，即第二组，匹配<code>include.*</code></li>
-<li>第三个括号，即第三组，匹配 <code>end.*</code></li>
-<li>第四个括号，即第四组，匹配 <code>(.*)</code></li>
-</ol>
-</li>
-</ol>
-<p>做个简单的测试</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">8</span>]: re_python = re.compile(<span class="string">r&#x27;^\s*%\s*(?:(if|elif|else|try|except|finally|for</span></span><br><span class="line"><span class="string">   ...: |while|with|def|class)|(include.*)|(end.*)|(.*))&#x27;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: s = <span class="string">&quot;%message = &#x27;Hello world!&#x27;&quot;</span> <span class="comment"># 符合第四组 .*</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: m = re_python.match(s)</span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: m.groups()</span><br><span class="line">Out[<span class="number">11</span>]: (<span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="string">&quot;message = &#x27;Hello world!&#x27;&quot;</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">12</span>]: s2 = <span class="string">&quot;    %for item in items:&quot;</span> <span class="comment"># 符合第一组 %for</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">13</span>]: m2 = re_python.match(s2)</span><br><span class="line"></span><br><span class="line">In [<span class="number">14</span>]: m2.groups()</span><br><span class="line">Out[<span class="number">14</span>]: (<span class="string">&#x27;for&#x27;</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">15</span>]: s3 = <span class="string">&quot;      %end&quot;</span> <span class="comment"># 符合第三组</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">16</span>]: m3 = re_python.match(s3)</span><br><span class="line"></span><br><span class="line">In [<span class="number">17</span>]: m3.groups()</span><br><span class="line">Out[<span class="number">17</span>]: (<span class="literal">None</span>, <span class="literal">None</span>, <span class="string">&#x27;end&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">18</span>]: s4 = <span class="string">&quot;    %include test.tpl&quot;</span> <span class="comment"># 符合第二组</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">19</span>]: m4 = re_python.match(s4)</span><br><span class="line"></span><br><span class="line">In [<span class="number">20</span>]: m4.groups()</span><br><span class="line">Out[<span class="number">20</span>]: (<span class="literal">None</span>, <span class="string">&#x27;include test.tpl&#x27;</span>, <span class="literal">None</span>, <span class="literal">None</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>再看下 <code>parse</code>函数中, 对符合 <code>re_python</code>字符串的处理</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">m = self.re_python.match(line)</span><br><span class="line"><span class="keyword">if</span> m:</span><br><span class="line">    flush()</span><br><span class="line">    <span class="comment"># 根据匹配后的 groups 区分</span></span><br><span class="line">    keyword, include, end, statement = m.groups()</span><br><span class="line">    <span class="keyword">if</span> keyword:</span><br><span class="line">        <span class="comment"># 如果是 (&#x27;elif&#x27;, &#x27;else&#x27;, &#x27;except&#x27;, &#x27;finally&#x27;), 则需要退格，保证python语法的正确性</span></span><br><span class="line">        <span class="keyword">if</span> keyword <span class="keyword">in</span> self.dedent_keywords:</span><br><span class="line">            indent -= <span class="number">1</span></span><br><span class="line">        code.append(<span class="string">&quot; &quot;</span> * indent + line[m.start(<span class="number">1</span>):])</span><br><span class="line">        indent += <span class="number">1</span></span><br><span class="line">    <span class="keyword">elif</span> include:</span><br><span class="line">        <span class="comment"># 添加子模板</span></span><br><span class="line">        tmp = line[m.end(<span class="number">2</span>):].strip().split(<span class="literal">None</span>, <span class="number">1</span>)</span><br><span class="line">        name = tmp[<span class="number">0</span>]</span><br><span class="line">        args = tmp[<span class="number">1</span>:] <span class="keyword">and</span> tmp[<span class="number">1</span>] <span class="keyword">or</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">        self.subtemplates[name] = SimpleTemplate.find(name)</span><br><span class="line">        code.append(<span class="string">&quot; &quot;</span> * indent + <span class="string">&quot;stdout.append(_subtemplates[%s].render(%s))\n&quot;</span> % (repr(name), args))</span><br><span class="line">    <span class="keyword">elif</span> end:</span><br><span class="line">        <span class="comment"># 结束循环时，将 indent -1, 保证语法正确性</span></span><br><span class="line">        indent -= <span class="number">1</span></span><br><span class="line">        code.append(<span class="string">&quot; &quot;</span> * indent + <span class="string">&#x27;#&#x27;</span> + line[m.start(<span class="number">3</span>):])</span><br><span class="line">    <span class="keyword">elif</span> statement:</span><br><span class="line">        <span class="comment"># 一般的 python 语句和注释</span></span><br><span class="line">        code.append(<span class="string">&quot; &quot;</span> * indent + line[m.start(<span class="number">4</span>):])</span><br></pre></td></tr></table></figure>
-
-<p>假设我们输入的 <code>template</code>为如下字符串</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">%message = <span class="string">&#x27;Hello world!&#x27;</span></span><br><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;head&gt;</span><br><span class="line">    &lt;title&gt;&#123;&#123;title.title()&#125;&#125;&lt;/title&gt;</span><br><span class="line">  &lt;/head&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">    &lt;h1&gt;&#123;&#123;title.title()&#125;&#125;&lt;/h1&gt;</span><br><span class="line">    &lt;p&gt;&#123;&#123;message&#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;Items in list: &#123;&#123;len(items)&#125;&#125;&lt;/p&gt;</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">    %<span class="keyword">for</span> item <span class="keyword">in</span> items:</span><br><span class="line">      &lt;li&gt;</span><br><span class="line">      %<span class="keyword">if</span> isinstance(item, int):</span><br><span class="line">        Zahl: &#123;&#123;item&#125;&#125;</span><br><span class="line">      %<span class="keyword">else</span>:</span><br><span class="line">        %<span class="keyword">try</span>:</span><br><span class="line">          Other type: (&#123;&#123;type(item).__name__&#125;&#125;) &#123;&#123;repr(item)&#125;&#125;</span><br><span class="line">        %<span class="keyword">except</span>:</span><br><span class="line">          Error: Item has no string representation.</span><br><span class="line">        %end <span class="keyword">try</span>-block (yes, you may add comments here)</span><br><span class="line">      %end</span><br><span class="line">      &lt;/li&gt;</span><br><span class="line">    %end</span><br><span class="line">    &lt;/ul&gt;</span><br><span class="line">  &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
-
-<p>调用函数如下, <code>content</code>为上面的文本内容</p>
-<p><code>template(content, title=&#39;Template Test&#39;, items=[1,2,3,&#39;fly&#39;])</code></p>
-<p>则处理完后的 <code>code</code> 如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&quot;message = &#x27;Hello world!&#x27;\n&quot;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.append(&#x27;&lt;html&gt;\\n  &lt;head&gt;\\n&#x27;)&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;\n\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.extend([&#x27;    &lt;title&gt;&#x27;, str(title.title()), &#x27;&lt;/title&gt;\\n&#x27;])\n&quot;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.append(&#x27;  &lt;/head&gt;\\n  &lt;body&gt;\\n&#x27;)&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;\n\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.extend([&#x27;    &lt;h1&gt;&#x27;, str(title.title()), &#x27;&lt;/h1&gt;\\n&#x27;])\n&quot;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.extend([&#x27;    &lt;p&gt;&#x27;, str(message), &#x27;&lt;/p&gt;\\n&#x27;])\n&quot;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.extend([&#x27;    &lt;p&gt;Items in list: &#x27;, str(len(items)), &#x27;&lt;/p&gt;\\n&#x27;])\n&quot;</span>,</span><br><span class="line"> <span class="string">&quot;stdout.append(&#x27;    &lt;ul&gt;\\n&#x27;)&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;\n&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;for item in items:\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot; stdout.append(&#x27;      &lt;li&gt;\\n&#x27;)&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;\n&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27; if isinstance(item, int):\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot;  stdout.extend([&#x27;        Zahl: &#x27;, str(item), &#x27;\\n&#x27;])\n&quot;</span>,</span><br><span class="line"> <span class="string">&#x27; else:\n&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;  try:\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot;   stdout.extend([&#x27;          Other type: (&#x27;, str(type(item).__name__), &#x27;) &#x27;, str(repr(item)), &#x27;\\n&#x27;])\n&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;  except:\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot;   stdout.append(&#x27;          Error: Item has no string representation.\\n&#x27;)&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;\n&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;  #end try-block (yes, you may add comments here)\n&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27; #end\n&#x27;</span>,</span><br><span class="line"> <span class="string">&quot; stdout.append(&#x27;      &lt;/li&gt;\\n&#x27;)&quot;</span>,</span><br><span class="line"> <span class="string">&#x27;\n&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;#end\n&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>通过 <code>eval</code> 将逐行执行上面的每一条语句，将输出的内容保存到 <code>stdout</code>中，完成对模板的渲染。</p>
-<p>最终渲染完成的字符串如下</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Template Test<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Template Test<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello world!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Items in list: 4<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">        Zahl: 1</span><br><span class="line">      <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">        Zahl: 2</span><br><span class="line">      <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">        Zahl: 3</span><br><span class="line">      <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">          Other type: (str) &#x27;fly&#x27;</span><br><span class="line">      <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -288,323 +182,19 @@
 		</ul>
 	</div>
 
-      
+          
 
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
-    <article id="post-CentOS客制化镜像制作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
+    </div></section>
+  
+
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/">CentOS客制化镜像制作</a>
-    </h1>
-  
-
-        
-        <a href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/" class="archive-article-date">
-  	<time datetime="2020-09-19T16:07:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>由于某些原因，需要在<code>CentOS</code>镜像中安装一些开发环境</p>
-<p>网上查询一番，相比于<code>Ubuntu</code>, <code>CentOS</code>系统客制化相关的资料不多，质量也不高。折腾一番，也踩了不少坑，总算将镜像做完。</p>
-<p>现在将客制化的步骤整理如下，希望能帮到需要的人</p>
-<p>参考视频链接:  <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=_LobCfU_uIY">https://www.youtube.com/watch?v=_LobCfU_uIY</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 1. 挂载镜像</span></span><br><span class="line">sudo mount -o loop CentOS-7-x86_64-LiveGNOME-1810.iso /mnt</span><br><span class="line">mkdir tmp</span><br><span class="line">cd tmp</span><br><span class="line">mkdir iso</span><br><span class="line"><span class="meta">#</span><span class="bash"> 2. 将镜像里的所有文件拷贝到本地</span></span><br><span class="line">cp -rfp /mnt/* iso/.</span><br><span class="line">cd iso/LiveOS/</span><br><span class="line">su root</span><br><span class="line"><span class="meta">#</span><span class="bash"> 3. 将img镜像解压</span></span><br><span class="line">unsquashfs squashfs.img</span><br><span class="line">cd squshfs-root/LiveOS/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 4. (可选)扩充ext3fs.img的大小,默认是8G,因为后面安装gcc需要用到3G,会导致空间不够,所以扩充大小至12G</span></span><br><span class="line">e2fsck -f ./ext3fs.img</span><br><span class="line">resize2fs ext3fs.img 12000M</span><br><span class="line">mkdir ext3fs</span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 挂载 ext3fs.img</span></span><br><span class="line">mount -o loop ext3fs.img ext3fs</span><br><span class="line">cd ext3fs/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 6. (可选)将本机的网络设置,软件安装源文件拷贝到镜像里,避免无法使用yum安装软件</span></span><br><span class="line">cp /etc/resolv.conf etc/</span><br><span class="line">cp /etc/hosts etc/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 7.将当前目录当做根目录,后面就可以在里面安装需要的东西了</span></span><br><span class="line">chroot .</span><br><span class="line"><span class="meta">#</span><span class="bash"> 8. 在当前环境中装自己想要的软件，装完后会保存到镜像里</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ...</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 9. 安装结束后,退出</span></span><br><span class="line">exit</span><br><span class="line">cd ..</span><br><span class="line"><span class="meta">#</span><span class="bash"> 10. 卸载和删除掉一些中间文件</span></span><br><span class="line">umount ext3fs</span><br><span class="line">rm -rf ext3fs</span><br><span class="line">cd ../..</span><br><span class="line">rm -rf squashfs.img</span><br><span class="line"><span class="meta">#</span><span class="bash"> 11. 重新生成squshfs.img</span></span><br><span class="line">mksquashfs squashfs-root/ squashfs.img -noappend -always-use-fragments</span><br><span class="line"><span class="meta">#</span><span class="bash"> 12. 删除中间文件</span></span><br><span class="line">rm -rf squashfs-root/</span><br><span class="line">cd ..</span><br><span class="line"><span class="meta">#</span><span class="bash"> 制作镜像,/media/custom_iso2.iso是生成的iso的保存路径,注意最后面的<span class="string">&quot;CentOS-7-x86_64-LiveGNOME-1810&quot;</span>不能改,否则会导致启动不了</span></span><br><span class="line">mkisofs -o /media/custom_iso2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat --no-emul-boot --boot-load-size 4 --boot-info-table -R -J -v -T -V &quot;CentOS-7-x86_64-LiveGNOME-1810&quot; .</span><br></pre></td></tr></table></figure>
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">其他</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-失效的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">失效的单例模式</a>
-    </h1>
-  
-
-        
-        <a href="/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-09-15T15:58:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="失效的单例模式"><a href="#失效的单例模式" class="headerlink" title="失效的单例模式"></a>失效的单例模式</h3><p>Python的单例模式实现方法有很多种，其中有一种是基于 <code>__new__</code> 和让子类去继承的实现方法。但是根据我的踩坑经验，这种方法往往是有问题的。试了下网上的多种实现方法，都有问题! 这种实现的单例并不是真正的单例! 这种实现在单线程中都存在问题，更别说在复杂的多线程环境中了</p>
-<h5 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h5><p>我们就拿 <code>stackoverflow</code> 的 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python">高赞回答</a>作分析(网上的其他回答都大同小异)，其中所提到的 基于 <code>__new__</code> 的实现代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span>(<span class="params">object</span>):</span></span><br><span class="line">  _instances = &#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__new__</span>(<span class="params">class_, *args, **kwargs</span>):</span></span><br><span class="line">    <span class="keyword">if</span> class_ <span class="keyword">not</span> <span class="keyword">in</span> class_._instances:</span><br><span class="line">        class_._instances[class_] = \</span><br><span class="line">        super(Singleton, class_).__new__(class_, *args, **kwargs)</span><br><span class="line">    <span class="keyword">return</span> class_._instances[class_]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">  <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">c = MyClass()</span><br></pre></td></tr></table></figure>
-
-<p>实现的原理在于，控制子类的 <code>__new__</code> 方法，让其返回的都是同一个对象</p>
-<h5 id="初步测试"><a href="#初步测试" class="headerlink" title="初步测试"></a>初步测试</h5><p>我们不妨写一些测试代码去分析</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.test_list = []</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">b = A()</span><br><span class="line">c = A()</span><br><span class="line"></span><br><span class="line">a.test_list.append(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">b.test_list.append(<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">c.test_list.append(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(id(a), id(b), id(c))</span><br><span class="line">print(a <span class="keyword">is</span> b <span class="keyword">and</span> b <span class="keyword">is</span> c)</span><br><span class="line">print(<span class="string">&quot;a.test_list =&quot;</span>, a.test_list)</span><br><span class="line">print(<span class="string">&quot;b.test_list =&quot;</span>, b.test_list)</span><br><span class="line">print(<span class="string">&quot;c.test_list =&quot;</span>, c.test_list)</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">140072986470664</span> <span class="number">140072986470664</span> <span class="number">140072986470664</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line">a.test_list = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">b.test_list = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">c.test_list = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-
-
-<p>输出的确是正常的，我们可以看出 <code>a</code> 和 <code>b</code> 以及 <code>c</code> 都是同一对象。并且我们后续分别往 <code>a</code> 和 <code>b</code> 和 <code>c</code> 中的 <code>test_list</code> 都存入数据后，每个实例的 <code>test_list</code> 都是 <code>[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]</code>, 这就是我们想要的结果!</p>
-<p>但这是否意味着这个单例的实现没问题呢？我们再做如下实验</p>
-<h5 id="进一步测试"><a href="#进一步测试" class="headerlink" title="进一步测试"></a>进一步测试</h5><p>我们把对每个实例的 <code>test_list</code> 插入顺序，改成实例化完，立马插入</p>
-<p>看下结果会怎样，测试代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.test_list = []</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">a.test_list.append(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">b = A()</span><br><span class="line">b.test_list.append(<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">c = A()</span><br><span class="line">c.test_list.append(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(id(a), id(b), id(c))</span><br><span class="line">print(a <span class="keyword">is</span> b <span class="keyword">and</span> b <span class="keyword">is</span> c)</span><br><span class="line">print(<span class="string">&quot;a.test_list =&quot;</span>, a.test_list)</span><br><span class="line">print(<span class="string">&quot;b.test_list =&quot;</span>, b.test_list)</span><br><span class="line">print(<span class="string">&quot;c.test_list =&quot;</span>, c.test_list)</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">140373892725000</span> <span class="number">140373892725000</span> <span class="number">140373892725000</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line">a.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">b.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">c.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>这时我们就发现问题了!</p>
-<p><code>a</code> 和 <code>b</code> 和 <code>c</code> 还是同一个对象，但是我们往 <code>a</code> 和 <code>b</code> 中塞进的数据竟然不见了，最终的 <code>test_list</code> 只有 <code>c</code> ! 单例失效了! 这个单例的实现有问题!</p>
-<h5 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h5><p>这个问题出现的原因就在于使用 <code>__new__</code> 实现的 <code>Singlegon</code> ，只会控制子类的 <code>__new__</code> 实现，而不会控制子类的 <code>__init__</code> 的实现</p>
-<p>当我们的子类自实现 <code>__new__</code> 方法时，每一次实例化子类，虽然子类的 <code>__new__</code> 确保最终只会实例化一次，但是 <code>__new__</code> 执行完后，子类还会执行自己的 <code>__init__</code> 方法，当<code>__init__</code> 中存在属性时，属性就会被多次声明，最终新生成的属性会覆盖掉上一次生成的属性!</p>
-<p>我们可以针对上述的代码加一些打印进行跟踪</p>
-<p>代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.test_list = []</span><br><span class="line">        print(<span class="string">&quot;id(test_list) =&quot;</span>, id(self.test_list))</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">a.test_list.append(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">b = A()</span><br><span class="line">b.test_list.append(<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">c = A()</span><br><span class="line">c.test_list.append(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;id(a.test_list) =&quot;</span>, id(a.test_list))</span><br><span class="line">print(<span class="string">&quot;id(b.test_list) =&quot;</span>, id(a.test_list))</span><br><span class="line">print(<span class="string">&quot;id(c.test_list) =&quot;</span>, id(c.test_list))</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;a.test_list =&quot;</span>, a.test_list)</span><br><span class="line">print(<span class="string">&quot;b.test_list =&quot;</span>, b.test_list)</span><br><span class="line">print(<span class="string">&quot;c.test_list =&quot;</span>, c.test_list)</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">id(test_list) = <span class="number">139866765387336</span> <span class="comment"># a 的 test_list </span></span><br><span class="line">id(test_list) = <span class="number">139866765389512</span> <span class="comment"># b 的 test_list</span></span><br><span class="line">id(test_list) = <span class="number">139866765387336</span> <span class="comment"># c 的 test_list</span></span><br><span class="line">id(a.test_list) = <span class="number">139866765387336</span> <span class="comment"># 打印的是 c 的 test_list</span></span><br><span class="line">id(b.test_list) = <span class="number">139866765387336</span> <span class="comment"># 打印的是 c 的 test_list</span></span><br><span class="line">id(c.test_list) = <span class="number">139866765387336</span> <span class="comment"># 打印的是 c 的 test_list</span></span><br><span class="line">a.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">b.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">c.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看出，在 <code>__init__</code> 中打印 <code>id(self.test_list)</code> 时，执行了三次，说明 <code>__init__</code> 方法执行了三次 </p>
-<p>并且 每个实例的 <code>id(test_list)</code> 是不一样的，可以看出 <code>self.test_list</code> 确实被定义了三次</p>
-<p>而在 <code>a b c</code> 实例化完成后，我们再去打印每个实例的 <code>id(test_list)</code> 时，发现 <code>a</code> 和 <code>b</code> 的 <code>test_list</code> 的 id 竟然变成和 <code>c</code> 一致，即 <code>a</code> 和 <code>b</code> 中的 <code>test_list</code> 被覆盖了，原先的各自的内容都丢失了!</p>
-<p>这明显不符合单例模式的应用场景!  单例模式的这种实现有 BUG!</p>
-<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
-<li>单例模式不要使用基于 <code>__new__</code> 的实现</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Python踩坑记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Python-删除列表中的列表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/14/Python-%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%88%97%E8%A1%A8/">Python-删除列表中的列表</a>
-    </h1>
-  
-
-        
-        <a href="/2020/09/14/Python-%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%88%97%E8%A1%A8/" class="archive-article-date">
-  	<time datetime="2020-09-14T14:12:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>假设这样一个场景，有一个列表 <code>total_list</code>, 里面包含的三个元素都是列表，分别是 <code>l1</code>, <code>l2</code> 和 <code>l3</code>, 假设现在给定其中的一个元素，比如 <code>l1</code>, 要从 <code>total_list</code> 中删除它。第一时间想到的会是使用下面的语句 <code>total_list.remove(l1)</code>，乍一看很合情合理。并且通过下面的测试语句也可正常运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">In [1]: l1 &#x3D; [1, 2]</span><br><span class="line"></span><br><span class="line">In [2]: l2 &#x3D; [3, 4]</span><br><span class="line"></span><br><span class="line">In [3]: l3 &#x3D; [5, 6]</span><br><span class="line"></span><br><span class="line">In [4]: total_list &#x3D; [l1, l2,  l3]</span><br><span class="line"></span><br><span class="line">In [5]: print(total_list)</span><br><span class="line">[[1, 2], [3, 4], [5, 6]]</span><br><span class="line"></span><br><span class="line">In [6]: total_list.remove(l1)</span><br><span class="line"></span><br><span class="line">In [7]: print(total_list) # 正常删除 l1</span><br><span class="line">[[3, 4], [5, 6]]</span><br><span class="line"></span><br><span class="line">In [8]: total_list.remove(l2)</span><br><span class="line"></span><br><span class="line">In [9]: print(total_list) # 正常删除 l2</span><br><span class="line">[[5, 6]]</span><br><span class="line"></span><br><span class="line">In [10]: total_list.remove(l3)</span><br><span class="line"></span><br><span class="line">In [11]: print(total_list) # 正常删除 l3</span><br><span class="line">[]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>不知各位有没有看出什么异常，如果看不出的话，不妨看下下面的另一个测试例子</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: l1 = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: l2 = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: l3 = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: total_list = [l1, l2, l3]</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: id(l1), id(l2), id(l3)</span><br><span class="line">Out[<span class="number">5</span>]: (<span class="number">140110036119496</span>, <span class="number">140110036107848</span>, <span class="number">140110036127368</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: total_list.remove(l3)</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: print(total_list) <span class="comment"># 可以看出 total_list 的列表确实少了一个</span></span><br><span class="line">[[], []]</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: l3.append(<span class="number">1</span>) <span class="comment"># 按照设想，l3 此时已不在 total_list 中，往 l3 中添加内容，应该不影响 total_list</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: print(total_list) <span class="comment"># 可以看出 total_list 改变了, l3 还在 total_list 中</span></span><br><span class="line">[[], [<span class="number">1</span>]]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: id(total_list[<span class="number">0</span>]), id(total_list[<span class="number">1</span>]) <span class="comment"># 查看 id, 发现 l2 和 l3 还在 total_list 中，被删除的其实是 l1 !</span></span><br><span class="line">Out[<span class="number">11</span>]: (<span class="number">140110036107848</span>, <span class="number">140110036127368</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>可以看出,我们希望删除的是 <code>l3</code>, 但是实际上删除的却是 <code>l1</code> </p>
-<p>原因在于在遍历 <code>total_list</code> 时, 遍历到的第一个元素是 <code>l1</code> 时, 满足 <code>__eq__</code> 方法, 所以此时直接把 <code>l1</code> 从 <code>total_list</code> 中删除。</p>
-<p>Python 官方文档的解释如下</p>
-<blockquote>
-<p>list.remove(x)<br>Remove the first item from the list whose value is equal to x. It raises a ValueError if there is no such item.</p>
-</blockquote>
-<p>那么，假设我现在就想删除列表<code>l3</code>，可以使用如下函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def remove_list(total_list, search_list):</span><br><span class="line">     for i, _list in enumerate(total_list):</span><br><span class="line">         if _list is search_list:</span><br><span class="line">             del total_list[i]</span><br><span class="line">             break</span><br></pre></td></tr></table></figure>
-<p>测试例子如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: l1, l2, l3 = [], [], []</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: id(l1), id(l2), id(l3)</span><br><span class="line">Out[<span class="number">2</span>]: (<span class="number">140163609930568</span>, <span class="number">140163610222216</span>, <span class="number">140163609929224</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: total_list = [l1, l2, l3]</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: <span class="function"><span class="keyword">def</span> <span class="title">remove_list</span>(<span class="params">total_list, search_list</span>):</span></span><br><span class="line">   ...:     <span class="keyword">for</span> i, _list <span class="keyword">in</span> enumerate(total_list):</span><br><span class="line">   ...:         <span class="keyword">if</span> _list <span class="keyword">is</span> search_list:</span><br><span class="line">   ...:             <span class="keyword">del</span> total_list[i]</span><br><span class="line">   ...:             <span class="keyword">break</span></span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: remove_list(total_list, l3)</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: total_list</span><br><span class="line">Out[<span class="number">6</span>]: [[], []]</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: l3.append(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: total_list</span><br><span class="line">Out[<span class="number">8</span>]: [[], []]</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: id(total_list[<span class="number">0</span>]), id(total_list[<span class="number">1</span>])</span><br><span class="line">Out[<span class="number">9</span>]: (<span class="number">140163609930568</span>, <span class="number">140163610222216</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: </span><br></pre></td></tr></table></figure>
-<p>可以看出 <code>l3</code> 已经从 <code>total_list</code> 中删除了</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Python踩坑记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/14/Python-%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%88%97%E8%A1%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-  
 
 
           </div>
@@ -624,9 +214,9 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
+		isHome: false,
 		isPost: false,
-		isArchive: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

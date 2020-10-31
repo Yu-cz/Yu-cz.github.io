@@ -6,17 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Yu-cz&#39;s Blog</title>
+  <title>Bottle Template 源码分析 | Yu-cz&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="aaa">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Yu-cz&#39;s Blog">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="简书上为首发，拒绝抄袭，原文地址 https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;a4a50c0b7ea7 Bottle Template1 Bottle SimpleTemplate 的简单使用场景 简单的花括号 123&gt;&gt;&gt; tpl &#x3D; SimpleTemplate(&amp;#x27;Hello &amp;#123;&amp;#123;name&amp;#125;&amp;#125;!&amp;#x27;)&gt;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bottle Template 源码分析">
+<meta property="og:url" content="http://example.com/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Yu-cz&#39;s Blog">
-<meta property="og:description" content="aaa">
+<meta property="og:description" content="简书上为首发，拒绝抄袭，原文地址 https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;a4a50c0b7ea7 Bottle Template1 Bottle SimpleTemplate 的简单使用场景 简单的花括号 123&gt;&gt;&gt; tpl &#x3D; SimpleTemplate(&amp;#x27;Hello &amp;#123;&amp;#123;name&amp;#125;&amp;#125;!&amp;#x27;)&gt;&amp;">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-31T09:21:55.000Z">
+<meta property="article:modified_time" content="2020-10-31T09:23:23.775Z">
 <meta property="article:author" content="Yu-cz">
-<meta property="article:tag" content="ccc ddd eee">
+<meta property="article:tag" content="Bottle 0.4.10 源码学习">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Yu-cz&#39;s Blog" type="application/atom+xml">
@@ -141,16 +143,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-Bottle-Template-源码分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Bottle-Template-源码分析" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle Template 源码分析</a>
+    <h1 class="article-title" itemprop="name">
+      Bottle Template 源码分析
     </h1>
   
 
@@ -273,6 +273,27 @@
       
 
       
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
     </div>
     <div class="article-info article-info-index">
       
@@ -291,16 +312,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">CentOS客制化镜像制作</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -320,290 +400,61 @@
 
 
 
+  
+    <section id="comments" class="comments">
+      <style>
+        .comments{margin:30px;padding:10px;background:#fff}
+        @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+      </style>
+      <div id="vcomment" class="comment"></div> 
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'true' == true ? true : false;
+   var verify = 'true' == true ? true : false;
+    window.onload = function() {
+        new Valine({
+            el: '.comment',
+            notify: notify,
+            verify: verify,
+            app_id: "GEbkfWdFeTPVcMleIckNzdwS-gzGzoHsz",
+            app_key: "ubr3qslQqDknmhRMhRuLXmoX",
+            placeholder: "表扬批评，都很欢迎. 知我罪我 一任诸君",
+            avatar:"retro"
+        });
+    }
+</script>
+
+  </section>
 
   
-    <article id="post-CentOS客制化镜像制作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/">CentOS客制化镜像制作</a>
-    </h1>
-  
-
-        
-        <a href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/" class="archive-article-date">
-  	<time datetime="2020-09-19T16:07:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>由于某些原因，需要在<code>CentOS</code>镜像中安装一些开发环境</p>
-<p>网上查询一番，相比于<code>Ubuntu</code>, <code>CentOS</code>系统客制化相关的资料不多，质量也不高。折腾一番，也踩了不少坑，总算将镜像做完。</p>
-<p>现在将客制化的步骤整理如下，希望能帮到需要的人</p>
-<p>参考视频链接:  <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=_LobCfU_uIY">https://www.youtube.com/watch?v=_LobCfU_uIY</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 1. 挂载镜像</span></span><br><span class="line">sudo mount -o loop CentOS-7-x86_64-LiveGNOME-1810.iso /mnt</span><br><span class="line">mkdir tmp</span><br><span class="line">cd tmp</span><br><span class="line">mkdir iso</span><br><span class="line"><span class="meta">#</span><span class="bash"> 2. 将镜像里的所有文件拷贝到本地</span></span><br><span class="line">cp -rfp /mnt/* iso/.</span><br><span class="line">cd iso/LiveOS/</span><br><span class="line">su root</span><br><span class="line"><span class="meta">#</span><span class="bash"> 3. 将img镜像解压</span></span><br><span class="line">unsquashfs squashfs.img</span><br><span class="line">cd squshfs-root/LiveOS/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 4. (可选)扩充ext3fs.img的大小,默认是8G,因为后面安装gcc需要用到3G,会导致空间不够,所以扩充大小至12G</span></span><br><span class="line">e2fsck -f ./ext3fs.img</span><br><span class="line">resize2fs ext3fs.img 12000M</span><br><span class="line">mkdir ext3fs</span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 挂载 ext3fs.img</span></span><br><span class="line">mount -o loop ext3fs.img ext3fs</span><br><span class="line">cd ext3fs/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 6. (可选)将本机的网络设置,软件安装源文件拷贝到镜像里,避免无法使用yum安装软件</span></span><br><span class="line">cp /etc/resolv.conf etc/</span><br><span class="line">cp /etc/hosts etc/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 7.将当前目录当做根目录,后面就可以在里面安装需要的东西了</span></span><br><span class="line">chroot .</span><br><span class="line"><span class="meta">#</span><span class="bash"> 8. 在当前环境中装自己想要的软件，装完后会保存到镜像里</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ...</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 9. 安装结束后,退出</span></span><br><span class="line">exit</span><br><span class="line">cd ..</span><br><span class="line"><span class="meta">#</span><span class="bash"> 10. 卸载和删除掉一些中间文件</span></span><br><span class="line">umount ext3fs</span><br><span class="line">rm -rf ext3fs</span><br><span class="line">cd ../..</span><br><span class="line">rm -rf squashfs.img</span><br><span class="line"><span class="meta">#</span><span class="bash"> 11. 重新生成squshfs.img</span></span><br><span class="line">mksquashfs squashfs-root/ squashfs.img -noappend -always-use-fragments</span><br><span class="line"><span class="meta">#</span><span class="bash"> 12. 删除中间文件</span></span><br><span class="line">rm -rf squashfs-root/</span><br><span class="line">cd ..</span><br><span class="line"><span class="meta">#</span><span class="bash"> 制作镜像,/media/custom_iso2.iso是生成的iso的保存路径,注意最后面的<span class="string">&quot;CentOS-7-x86_64-LiveGNOME-1810&quot;</span>不能改,否则会导致启动不了</span></span><br><span class="line">mkisofs -o /media/custom_iso2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat --no-emul-boot --boot-load-size 4 --boot-info-table -R -J -v -T -V &quot;CentOS-7-x86_64-LiveGNOME-1810&quot; .</span><br></pre></td></tr></table></figure>
-
-
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">其他</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/20/CentOS%E5%AE%A2%E5%88%B6%E5%8C%96%E9%95%9C%E5%83%8F%E5%88%B6%E4%BD%9C/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
+  <div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="Bottle-Template-源码分析" data-title="Bottle Template 源码分析" data-url="http://example.com/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
   
-    <article id="post-失效的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">失效的单例模式</a>
-    </h1>
   
 
-        
-        <a href="/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-09-15T15:58:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="失效的单例模式"><a href="#失效的单例模式" class="headerlink" title="失效的单例模式"></a>失效的单例模式</h3><p>Python的单例模式实现方法有很多种，其中有一种是基于 <code>__new__</code> 和让子类去继承的实现方法。但是根据我的踩坑经验，这种方法往往是有问题的。试了下网上的多种实现方法，都有问题! 这种实现的单例并不是真正的单例! 这种实现在单线程中都存在问题，更别说在复杂的多线程环境中了</p>
-<h5 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h5><p>我们就拿 <code>stackoverflow</code> 的 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python">高赞回答</a>作分析(网上的其他回答都大同小异)，其中所提到的 基于 <code>__new__</code> 的实现代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Singleton</span>(<span class="params">object</span>):</span></span><br><span class="line">  _instances = &#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__new__</span>(<span class="params">class_, *args, **kwargs</span>):</span></span><br><span class="line">    <span class="keyword">if</span> class_ <span class="keyword">not</span> <span class="keyword">in</span> class_._instances:</span><br><span class="line">        class_._instances[class_] = \</span><br><span class="line">        super(Singleton, class_).__new__(class_, *args, **kwargs)</span><br><span class="line">    <span class="keyword">return</span> class_._instances[class_]</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">  <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">c = MyClass()</span><br></pre></td></tr></table></figure>
-
-<p>实现的原理在于，控制子类的 <code>__new__</code> 方法，让其返回的都是同一个对象</p>
-<h5 id="初步测试"><a href="#初步测试" class="headerlink" title="初步测试"></a>初步测试</h5><p>我们不妨写一些测试代码去分析</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.test_list = []</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">b = A()</span><br><span class="line">c = A()</span><br><span class="line"></span><br><span class="line">a.test_list.append(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">b.test_list.append(<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">c.test_list.append(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(id(a), id(b), id(c))</span><br><span class="line">print(a <span class="keyword">is</span> b <span class="keyword">and</span> b <span class="keyword">is</span> c)</span><br><span class="line">print(<span class="string">&quot;a.test_list =&quot;</span>, a.test_list)</span><br><span class="line">print(<span class="string">&quot;b.test_list =&quot;</span>, b.test_list)</span><br><span class="line">print(<span class="string">&quot;c.test_list =&quot;</span>, c.test_list)</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">140072986470664</span> <span class="number">140072986470664</span> <span class="number">140072986470664</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line">a.test_list = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">b.test_list = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">c.test_list = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-
-
-<p>输出的确是正常的，我们可以看出 <code>a</code> 和 <code>b</code> 以及 <code>c</code> 都是同一对象。并且我们后续分别往 <code>a</code> 和 <code>b</code> 和 <code>c</code> 中的 <code>test_list</code> 都存入数据后，每个实例的 <code>test_list</code> 都是 <code>[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]</code>, 这就是我们想要的结果!</p>
-<p>但这是否意味着这个单例的实现没问题呢？我们再做如下实验</p>
-<h5 id="进一步测试"><a href="#进一步测试" class="headerlink" title="进一步测试"></a>进一步测试</h5><p>我们把对每个实例的 <code>test_list</code> 插入顺序，改成实例化完，立马插入</p>
-<p>看下结果会怎样，测试代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.test_list = []</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">a.test_list.append(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">b = A()</span><br><span class="line">b.test_list.append(<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">c = A()</span><br><span class="line">c.test_list.append(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(id(a), id(b), id(c))</span><br><span class="line">print(a <span class="keyword">is</span> b <span class="keyword">and</span> b <span class="keyword">is</span> c)</span><br><span class="line">print(<span class="string">&quot;a.test_list =&quot;</span>, a.test_list)</span><br><span class="line">print(<span class="string">&quot;b.test_list =&quot;</span>, b.test_list)</span><br><span class="line">print(<span class="string">&quot;c.test_list =&quot;</span>, c.test_list)</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">140373892725000</span> <span class="number">140373892725000</span> <span class="number">140373892725000</span></span><br><span class="line"><span class="literal">True</span></span><br><span class="line">a.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">b.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">c.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>这时我们就发现问题了!</p>
-<p><code>a</code> 和 <code>b</code> 和 <code>c</code> 还是同一个对象，但是我们往 <code>a</code> 和 <code>b</code> 中塞进的数据竟然不见了，最终的 <code>test_list</code> 只有 <code>c</code> ! 单例失效了! 这个单例的实现有问题!</p>
-<h5 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h5><p>这个问题出现的原因就在于使用 <code>__new__</code> 实现的 <code>Singlegon</code> ，只会控制子类的 <code>__new__</code> 实现，而不会控制子类的 <code>__init__</code> 的实现</p>
-<p>当我们的子类自实现 <code>__new__</code> 方法时，每一次实例化子类，虽然子类的 <code>__new__</code> 确保最终只会实例化一次，但是 <code>__new__</code> 执行完后，子类还会执行自己的 <code>__init__</code> 方法，当<code>__init__</code> 中存在属性时，属性就会被多次声明，最终新生成的属性会覆盖掉上一次生成的属性!</p>
-<p>我们可以针对上述的代码加一些打印进行跟踪</p>
-<p>代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>(<span class="params">Singleton</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.test_list = []</span><br><span class="line">        print(<span class="string">&quot;id(test_list) =&quot;</span>, id(self.test_list))</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">a.test_list.append(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">b = A()</span><br><span class="line">b.test_list.append(<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">c = A()</span><br><span class="line">c.test_list.append(<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;id(a.test_list) =&quot;</span>, id(a.test_list))</span><br><span class="line">print(<span class="string">&quot;id(b.test_list) =&quot;</span>, id(a.test_list))</span><br><span class="line">print(<span class="string">&quot;id(c.test_list) =&quot;</span>, id(c.test_list))</span><br><span class="line"></span><br><span class="line">print(<span class="string">&quot;a.test_list =&quot;</span>, a.test_list)</span><br><span class="line">print(<span class="string">&quot;b.test_list =&quot;</span>, b.test_list)</span><br><span class="line">print(<span class="string">&quot;c.test_list =&quot;</span>, c.test_list)</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">id(test_list) = <span class="number">139866765387336</span> <span class="comment"># a 的 test_list </span></span><br><span class="line">id(test_list) = <span class="number">139866765389512</span> <span class="comment"># b 的 test_list</span></span><br><span class="line">id(test_list) = <span class="number">139866765387336</span> <span class="comment"># c 的 test_list</span></span><br><span class="line">id(a.test_list) = <span class="number">139866765387336</span> <span class="comment"># 打印的是 c 的 test_list</span></span><br><span class="line">id(b.test_list) = <span class="number">139866765387336</span> <span class="comment"># 打印的是 c 的 test_list</span></span><br><span class="line">id(c.test_list) = <span class="number">139866765387336</span> <span class="comment"># 打印的是 c 的 test_list</span></span><br><span class="line">a.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">b.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br><span class="line">c.test_list = [<span class="string">&#x27;c&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>我们可以看出，在 <code>__init__</code> 中打印 <code>id(self.test_list)</code> 时，执行了三次，说明 <code>__init__</code> 方法执行了三次 </p>
-<p>并且 每个实例的 <code>id(test_list)</code> 是不一样的，可以看出 <code>self.test_list</code> 确实被定义了三次</p>
-<p>而在 <code>a b c</code> 实例化完成后，我们再去打印每个实例的 <code>id(test_list)</code> 时，发现 <code>a</code> 和 <code>b</code> 的 <code>test_list</code> 的 id 竟然变成和 <code>c</code> 一致，即 <code>a</code> 和 <code>b</code> 中的 <code>test_list</code> 被覆盖了，原先的各自的内容都丢失了!</p>
-<p>这明显不符合单例模式的应用场景!  单例模式的这种实现有 BUG!</p>
-<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
-<li>单例模式不要使用基于 <code>__new__</code> 的实现</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Python踩坑记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/15/%E5%A4%B1%E6%95%88%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Python-删除列表中的列表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/14/Python-%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%88%97%E8%A1%A8/">Python-删除列表中的列表</a>
-    </h1>
   
 
-        
-        <a href="/2020/09/14/Python-%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%88%97%E8%A1%A8/" class="archive-article-date">
-  	<time datetime="2020-09-14T14:12:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>假设这样一个场景，有一个列表 <code>total_list</code>, 里面包含的三个元素都是列表，分别是 <code>l1</code>, <code>l2</code> 和 <code>l3</code>, 假设现在给定其中的一个元素，比如 <code>l1</code>, 要从 <code>total_list</code> 中删除它。第一时间想到的会是使用下面的语句 <code>total_list.remove(l1)</code>，乍一看很合情合理。并且通过下面的测试语句也可正常运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">In [1]: l1 &#x3D; [1, 2]</span><br><span class="line"></span><br><span class="line">In [2]: l2 &#x3D; [3, 4]</span><br><span class="line"></span><br><span class="line">In [3]: l3 &#x3D; [5, 6]</span><br><span class="line"></span><br><span class="line">In [4]: total_list &#x3D; [l1, l2,  l3]</span><br><span class="line"></span><br><span class="line">In [5]: print(total_list)</span><br><span class="line">[[1, 2], [3, 4], [5, 6]]</span><br><span class="line"></span><br><span class="line">In [6]: total_list.remove(l1)</span><br><span class="line"></span><br><span class="line">In [7]: print(total_list) # 正常删除 l1</span><br><span class="line">[[3, 4], [5, 6]]</span><br><span class="line"></span><br><span class="line">In [8]: total_list.remove(l2)</span><br><span class="line"></span><br><span class="line">In [9]: print(total_list) # 正常删除 l2</span><br><span class="line">[[5, 6]]</span><br><span class="line"></span><br><span class="line">In [10]: total_list.remove(l3)</span><br><span class="line"></span><br><span class="line">In [11]: print(total_list) # 正常删除 l3</span><br><span class="line">[]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>不知各位有没有看出什么异常，如果看不出的话，不妨看下下面的另一个测试例子</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: l1 = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: l2 = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: l3 = []</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: total_list = [l1, l2, l3]</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: id(l1), id(l2), id(l3)</span><br><span class="line">Out[<span class="number">5</span>]: (<span class="number">140110036119496</span>, <span class="number">140110036107848</span>, <span class="number">140110036127368</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: total_list.remove(l3)</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: print(total_list) <span class="comment"># 可以看出 total_list 的列表确实少了一个</span></span><br><span class="line">[[], []]</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: l3.append(<span class="number">1</span>) <span class="comment"># 按照设想，l3 此时已不在 total_list 中，往 l3 中添加内容，应该不影响 total_list</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: print(total_list) <span class="comment"># 可以看出 total_list 改变了, l3 还在 total_list 中</span></span><br><span class="line">[[], [<span class="number">1</span>]]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: id(total_list[<span class="number">0</span>]), id(total_list[<span class="number">1</span>]) <span class="comment"># 查看 id, 发现 l2 和 l3 还在 total_list 中，被删除的其实是 l1 !</span></span><br><span class="line">Out[<span class="number">11</span>]: (<span class="number">140110036107848</span>, <span class="number">140110036127368</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>可以看出,我们希望删除的是 <code>l3</code>, 但是实际上删除的却是 <code>l1</code> </p>
-<p>原因在于在遍历 <code>total_list</code> 时, 遍历到的第一个元素是 <code>l1</code> 时, 满足 <code>__eq__</code> 方法, 所以此时直接把 <code>l1</code> 从 <code>total_list</code> 中删除。</p>
-<p>Python 官方文档的解释如下</p>
-<blockquote>
-<p>list.remove(x)<br>Remove the first item from the list whose value is equal to x. It raises a ValueError if there is no such item.</p>
-</blockquote>
-<p>那么，假设我现在就想删除列表<code>l3</code>，可以使用如下函数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def remove_list(total_list, search_list):</span><br><span class="line">     for i, _list in enumerate(total_list):</span><br><span class="line">         if _list is search_list:</span><br><span class="line">             del total_list[i]</span><br><span class="line">             break</span><br></pre></td></tr></table></figure>
-<p>测试例子如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: l1, l2, l3 = [], [], []</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: id(l1), id(l2), id(l3)</span><br><span class="line">Out[<span class="number">2</span>]: (<span class="number">140163609930568</span>, <span class="number">140163610222216</span>, <span class="number">140163609929224</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: total_list = [l1, l2, l3]</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: <span class="function"><span class="keyword">def</span> <span class="title">remove_list</span>(<span class="params">total_list, search_list</span>):</span></span><br><span class="line">   ...:     <span class="keyword">for</span> i, _list <span class="keyword">in</span> enumerate(total_list):</span><br><span class="line">   ...:         <span class="keyword">if</span> _list <span class="keyword">is</span> search_list:</span><br><span class="line">   ...:             <span class="keyword">del</span> total_list[i]</span><br><span class="line">   ...:             <span class="keyword">break</span></span><br><span class="line">   ...:</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: remove_list(total_list, l3)</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: total_list</span><br><span class="line">Out[<span class="number">6</span>]: [[], []]</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: l3.append(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: total_list</span><br><span class="line">Out[<span class="number">8</span>]: [[], []]</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: id(total_list[<span class="number">0</span>]), id(total_list[<span class="number">1</span>])</span><br><span class="line">Out[<span class="number">9</span>]: (<span class="number">140163609930568</span>, <span class="number">140163610222216</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: </span><br></pre></td></tr></table></figure>
-<p>可以看出 <code>l3</code> 已经从 <code>total_list</code> 中删除了</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Python踩坑记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/14/Python-%E5%88%A0%E9%99%A4%E5%88%97%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%88%97%E8%A1%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
+
   
 
 
@@ -624,8 +475,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
