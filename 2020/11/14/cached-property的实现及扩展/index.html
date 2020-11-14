@@ -6,17 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2020/10 | Yu-cz&#39;s Blog</title>
+  <title>cached_property的实现及扩展 | Yu-cz&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="aaa">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Yu-cz&#39;s Blog">
-<meta property="og:url" content="http://example.com/archives/2020/10/index.html">
+  <meta name="description" content="拒绝转载, 原文链接: https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;b228c37f2fb1 cached_property的实现与扩展在阅读 Bottle 和 Flask　源码中，都发现了各自实现 cached_property 的身影。这是一个很实用的 descriptor ，可以缓存属性，当不是第一次调用时，直接从缓存中读取，减少函数的调用次数 下面就简单分析下 chached_pr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cached_property的实现及扩展">
+<meta property="og:url" content="http://example.com/2020/11/14/cached-property%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%89%A9%E5%B1%95/index.html">
 <meta property="og:site_name" content="Yu-cz&#39;s Blog">
-<meta property="og:description" content="aaa">
+<meta property="og:description" content="拒绝转载, 原文链接: https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;b228c37f2fb1 cached_property的实现与扩展在阅读 Bottle 和 Flask　源码中，都发现了各自实现 cached_property 的身影。这是一个很实用的 descriptor ，可以缓存属性，当不是第一次调用时，直接从缓存中读取，减少函数的调用次数 下面就简单分析下 chached_pr">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-11-14T08:58:18.000Z">
+<meta property="article:modified_time" content="2020-11-14T08:58:43.272Z">
 <meta property="article:author" content="Yu-cz">
-<meta property="article:tag" content="ccc ddd eee">
+<meta property="article:tag" content="Python学习记录">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Yu-cz&#39;s Blog" type="application/atom+xml">
@@ -141,98 +143,255 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-cached-property的实现及扩展" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-10-31T09:27:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle route 源码分析</a>
+    <h1 class="article-title" itemprop="name">
+      cached_property的实现及扩展
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/11/14/cached-property%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%89%A9%E5%B1%95/" class="archive-article-date">
+  	<time datetime="2020-11-14T08:58:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>拒绝转载, 原文链接: <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b228c37f2fb1">https://www.jianshu.com/p/b228c37f2fb1</a></p>
+<h3 id="cached-property的实现与扩展"><a href="#cached-property的实现与扩展" class="headerlink" title="cached_property的实现与扩展"></a>cached_property的实现与扩展</h3><p>在阅读 <code>Bottle</code> 和 <code>Flask</code>　源码中，都发现了各自实现 <code>cached_property</code> 的身影。这是一个很实用的 <code>descriptor</code> ，可以缓存属性，当不是第一次调用时，直接从缓存中读取，减少函数的调用次数</p>
+<p>下面就简单分析下 <code>chached_property</code> 的实现原理，其中涉及到 Python 实例属性的调用流程，如果读者不是很清晰的话，建议先参考上篇文章　<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b2691cf186d4">Python属性的调用流程</a></p>
+<h5 id="1-Bottle-中的实现"><a href="#1-Bottle-中的实现" class="headerlink" title="1 Bottle 中的实现"></a>1 Bottle 中的实现</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">cached_property</span>(<span class="params">object</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; A property that is only computed once per instance and then replaces</span></span><br><span class="line"><span class="string">        itself with an ordinary attribute. Deleting the attribute resets the</span></span><br><span class="line"><span class="string">        property. &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, func</span>):</span></span><br><span class="line">        update_wrapper(self, func)</span><br><span class="line">        self.func = func</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, obj, cls</span>):</span></span><br><span class="line">        <span class="keyword">if</span> obj <span class="keyword">is</span> <span class="literal">None</span>: <span class="keyword">return</span> self</span><br><span class="line">        value = obj.__dict__[self.func.__name__] = self.func(obj)</span><br><span class="line">        <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+
+<p>很简单的实现</p>
+<h5 id="2-简单的测试"><a href="#2-简单的测试" class="headerlink" title="2 简单的测试"></a>2 简单的测试</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self._count = <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @cached_property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">count</span>(<span class="params">self</span>):</span></span><br><span class="line">        self._count += <span class="number">50</span></span><br><span class="line">        <span class="keyword">return</span> self._count</span><br><span class="line"></span><br><span class="line">t = Test()</span><br><span class="line"><span class="comment"># 第一次调用的时候，会执行 count 函数</span></span><br><span class="line">t.count</span><br><span class="line">Out[<span class="number">4</span>]: <span class="number">150</span></span><br><span class="line"><span class="comment"># 后面的调用都不会执行 count 函数</span></span><br><span class="line">t.count</span><br><span class="line">Out[<span class="number">5</span>]: <span class="number">150</span></span><br><span class="line">t.count</span><br><span class="line">Out[<span class="number">6</span>]: <span class="number">150</span></span><br></pre></td></tr></table></figure>
+
+<p>由测试例子可以看出 <code>count</code> 函数确实只执行了一次，后续访问 <code>t.count</code> 只会从缓存中读取</p>
+<h5 id="3-原理分析"><a href="#3-原理分析" class="headerlink" title="3 原理分析"></a>3 原理分析</h5><p>根据 <code>cached_property</code> 的实现代码，我们知道 <code>cached_property</code> 是一个 <code>non-data descriptor</code></p>
+<h5 id="第一次调用"><a href="#第一次调用" class="headerlink" title="第一次调用"></a>第一次调用</h5><p>当第一次调用 <code>t.count</code> 时，由于 <code>count</code> 存在于 <code>Test.__dict__</code> 但不是 <code>data descriptor</code>, 然后 <code>count</code> 也不存在于 <code>t.__dict__</code> 中，</p>
+<p>由于 <code>count</code> 是一个 <code>non-descriptor</code> , 根据　<strong>属性的访问顺序</strong>，会调用到 <code>T.__dict__[&#39;count&#39;].__get(obj, cls)</code>函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">t = Test()</span><br><span class="line">Test.__dict__</span><br><span class="line">Out[<span class="number">4</span>]:  <span class="comment"># count 存在于类中，但是一个 non-data descriptor</span></span><br><span class="line">mappingproxy(&#123;<span class="string">&#x27;__dict__&#x27;</span>: &lt;attribute <span class="string">&#x27;__dict__&#x27;</span> of <span class="string">&#x27;Test&#x27;</span> objects&gt;,</span><br><span class="line">              <span class="string">&#x27;__doc__&#x27;</span>: <span class="literal">None</span>,</span><br><span class="line">              <span class="string">&#x27;__init__&#x27;</span>: &lt;function __main__.Test.__init__&gt;,</span><br><span class="line">              <span class="string">&#x27;__module__&#x27;</span>: <span class="string">&#x27;__main__&#x27;</span>,</span><br><span class="line">              <span class="string">&#x27;__weakref__&#x27;</span>: &lt;attribute <span class="string">&#x27;__weakref__&#x27;</span> of <span class="string">&#x27;Test&#x27;</span> objects&gt;,</span><br><span class="line">              <span class="string">&#x27;count&#x27;</span>: &lt;__main__.cached_property at <span class="number">0x7f662a6337f0</span>&gt;&#125;)</span><br><span class="line">t.__dict__</span><br><span class="line">Out[<span class="number">5</span>]: &#123;<span class="string">&#x27;_count&#x27;</span>: <span class="number">100</span>&#125; <span class="comment"># count 不存在于 t.__dict__</span></span><br></pre></td></tr></table></figure>
+
+<p>再看下 <code>cached_property</code> 中 <code>__get__</code> 的实现</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, obj, cls</span>):</span></span><br><span class="line">    <span class="comment"># 如果直接通过 Class 访问，则返回自身</span></span><br><span class="line">    <span class="keyword">if</span> obj <span class="keyword">is</span> <span class="literal">None</span>: </span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line">   	<span class="comment"># 将 count 放在实例的 instance 中</span></span><br><span class="line">    value = obj.__dict__[self.func.__name__] = self.func(obj)</span><br><span class="line">    <span class="comment"># obj.__dict__: &#123;&#x27;_count&#x27;: 150, &#x27;count&#x27;: 150&#125;</span></span><br><span class="line">    print(<span class="string">&quot;obj.__dict__:&quot;</span>, obj.__dict__)</span><br><span class="line">    <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+
+<p><code>__get__</code> 的实现是，调用传递进来的 <code>count</code> 函数，并将其结果保留在 <code>__dict__</code> 中，<code>key</code> 为函数名，即 <code>count</code></p>
+<p>所以当第一次调用 <code>t.count</code> 后, <code>obj.__dict__</code> 中就包含 <code>count</code> 属性了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t.__dict__</span><br><span class="line">Out[<span class="number">5</span>]: &#123;<span class="string">&#x27;_count&#x27;</span>: <span class="number">150</span>, <span class="string">&#x27;count&#x27;</span>: <span class="number">150</span>&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="第二次调用"><a href="#第二次调用" class="headerlink" title="第二次调用"></a>第二次调用</h5><p>当第二次调用后，根据<strong>属性的调用顺序</strong>，由于 <code>t.__dict__</code> 中包含 <code>count</code>属性，所以这次调用不会经过 <code>__get__</code> 函数，而是直接从 <code>t.__dict__</code> 中读取，从而达到缓存属性的目的.</p>
+<h5 id="4-支持多线程"><a href="#4-支持多线程" class="headerlink" title="4 支持多线程"></a>4 支持多线程</h5><p>根据代码分析可知, <code>Bottle</code> 中实现的 <code>cached_property</code> 是不支持多线程的，当我们在多线程场景中使用时，会出现问题。比如说</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> threading <span class="keyword">import</span> Thread</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self._count = <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @cached_property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">count</span>(<span class="params">self</span>):</span></span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br><span class="line">        self._count += <span class="number">50</span></span><br><span class="line">        <span class="keyword">return</span> self._count</span><br><span class="line"></span><br><span class="line">t = Test()</span><br><span class="line">threads = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">10</span>):</span><br><span class="line">    thread = Thread(target=<span class="keyword">lambda</span> : t.count)</span><br><span class="line">    thread.start()</span><br><span class="line">    threads.append(thread)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> thread <span class="keyword">in</span> threads:</span><br><span class="line">    thread.join()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印输出: t.count = 600</span></span><br><span class="line">print(<span class="string">&quot;t.count =&quot;</span>, t.count)</span><br></pre></td></tr></table></figure>
+
+<p>打印出的结果是 600，说明 t.count 执行了10次，没有达到缓存的功能。</p>
+<p>我们重新实现 <code>cached_property</code>, 让其支持多线程，实现代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">cached_property</span>(<span class="params">object</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, func</span>):</span></span><br><span class="line">        self.func = func</span><br><span class="line">        self.lock = threading.RLock()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, obj, cls</span>):</span></span><br><span class="line">        <span class="keyword">if</span> obj <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">        <span class="keyword">with</span> self.lock:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="comment"># 当第二次及之后的调用中，name 已经在 __dict__ 中了，所以直接从里面拿</span></span><br><span class="line">                <span class="keyword">return</span> obj.__dict__[self.func.__name__]</span><br><span class="line">            <span class="keyword">except</span> KeyError:</span><br><span class="line">                <span class="comment"># 第一次访问时，name 不在 obj_dict 中，调用 func，再将其放到 __dict__ 中</span></span><br><span class="line">                <span class="keyword">return</span> obj.__dict__.setdefault(self.func.__name__, self.func(obj))</span><br></pre></td></tr></table></figure>
+
+<p>然后再去执行上面的测试代码，得出的 <code>count</code> 是 150, 说明多线程测试成功</p>
+<h5 id="5-参考链接"><a href="#5-参考链接" class="headerlink" title="5 参考链接"></a>5 参考链接</h5><p><a target="_blank" rel="noopener" href="https://pypi.org/project/cached-property/">https://pypi.org/project/cached-property/</a></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Bottle 0.4.10 源码学习</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Python学习记录</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2020/11/14/cached-property%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%89%A9%E5%B1%95/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-10-31T09:21:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2020/11/14/Attribute-Lookup-%E5%BD%93%E8%AE%BF%E9%97%AE%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%B1%9E%E6%80%A7%E6%97%B6%EF%BC%8C%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Attribute Lookup: 当访问实例的属性时，发生了什么
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Bottle route 源码分析</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle Template 源码分析</a>
-    </h1>
+    <section id="comments" class="comments">
+      <style>
+        .comments{margin:30px;padding:10px;background:#fff}
+        @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+      </style>
+      <div id="vcomment" class="comment"></div> 
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'true' == true ? true : false;
+   var verify = 'true' == true ? true : false;
+    window.onload = function() {
+        new Valine({
+            el: '.comment',
+            notify: notify,
+            verify: verify,
+            app_id: "GEbkfWdFeTPVcMleIckNzdwS-gzGzoHsz",
+            app_key: "ubr3qslQqDknmhRMhRuLXmoX",
+            placeholder: "表扬批评，都很欢迎. 知我罪我 一任诸君",
+            avatar:"retro"
+        });
+    }
+</script>
+
+  </section>
+
+  
+  <div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="cached-property的实现及扩展" data-title="cached_property的实现及扩展" data-url="http://example.com/2020/11/14/cached-property%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%89%A9%E5%B1%95/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+  
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Bottle 0.4.10 源码学习</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -253,8 +412,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

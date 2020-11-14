@@ -6,18 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2020/10 | Yu-cz&#39;s Blog</title>
+  <title>Attribute Lookup: 当访问实例的属性时，发生了什么 | Yu-cz&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="aaa">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Yu-cz&#39;s Blog">
-<meta property="og:url" content="http://example.com/archives/2020/10/index.html">
+  <meta name="description" content="原文地址, 拒绝转载: https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;b2691cf186d4  Attribute Lookup假设 Cls 是类，instance 是类 Cls 的一个实例，当调用 instance.attr 时，到底发生了什么呢？下面就来一一探讨属性访问的调用流程 1  descriptor什么是 desciptor, 官方文档给出的回答是   A descriptor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Attribute Lookup: 当访问实例的属性时，发生了什么">
+<meta property="og:url" content="http://example.com/2020/11/14/Attribute-Lookup-%E5%BD%93%E8%AE%BF%E9%97%AE%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%B1%9E%E6%80%A7%E6%97%B6%EF%BC%8C%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/index.html">
 <meta property="og:site_name" content="Yu-cz&#39;s Blog">
-<meta property="og:description" content="aaa">
+<meta property="og:description" content="原文地址, 拒绝转载: https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;b2691cf186d4  Attribute Lookup假设 Cls 是类，instance 是类 Cls 的一个实例，当调用 instance.attr 时，到底发生了什么呢？下面就来一一探讨属性访问的调用流程 1  descriptor什么是 desciptor, 官方文档给出的回答是   A descriptor">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/10849491-ed6a9ba736284fd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="article:published_time" content="2020-11-14T08:59:34.000Z">
+<meta property="article:modified_time" content="2020-11-14T08:59:55.505Z">
 <meta property="article:author" content="Yu-cz">
-<meta property="article:tag" content="ccc ddd eee">
+<meta property="article:tag" content="Python学习记录">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/10849491-ed6a9ba736284fd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
   
     <link rel="alternative" href="/atom.xml" title="Yu-cz&#39;s Blog" type="application/atom+xml">
   
@@ -141,98 +145,277 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Attribute-Lookup-当访问实例的属性时，发生了什么" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-10-31T09:27:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/10/31/Bottle-route-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle route 源码分析</a>
+    <h1 class="article-title" itemprop="name">
+      Attribute Lookup: 当访问实例的属性时，发生了什么
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/11/14/Attribute-Lookup-%E5%BD%93%E8%AE%BF%E9%97%AE%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%B1%9E%E6%80%A7%E6%97%B6%EF%BC%8C%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" class="archive-article-date">
+  	<time datetime="2020-11-14T08:59:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文地址, 拒绝转载: <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b2691cf186d4">https://www.jianshu.com/p/b2691cf186d4</a> </p>
+<h3 id="Attribute-Lookup"><a href="#Attribute-Lookup" class="headerlink" title="Attribute Lookup"></a>Attribute Lookup</h3><p>假设 Cls 是类，instance 是类 Cls 的一个实例，当调用 instance.attr 时，到底发生了什么呢？下面就来一一探讨属性访问的调用流程</p>
+<h5 id="1-descriptor"><a href="#1-descriptor" class="headerlink" title="1  descriptor"></a>1  descriptor</h5><p>什么是 <code>desciptor</code>, 官方文档给出的回答是 </p>
+<blockquote>
+<p>A <a target="_blank" rel="noopener" href="https://docs.python.org/3/glossary.html#term-descriptor">descriptor</a> is what we call any object that defines <a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/datamodel.html#object.__get__"><code>__get__()</code></a>, <a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/datamodel.html#object.__set__"><code>__set__()</code></a>, or <a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/datamodel.html#object.__delete__"><code>__delete__()</code></a>.</p>
+</blockquote>
+<p>即包含了任意 <code>__get__</code> 或者 <code>__set__</code> 或者 <code>__delete__</code> 函数的方法的 <code>object</code> 都是 <code>descriptor</code></p>
+<h5 id="2-data-descriptor-与-non-data-descriptors"><a href="#2-data-descriptor-与-non-data-descriptors" class="headerlink" title="2 data descriptor 与 non-data descriptors"></a>2 data descriptor 与 non-data descriptors</h5><blockquote>
+<p>If an object defines <a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/datamodel.html#object.__set__"><code>__set__()</code></a> or <a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/datamodel.html#object.__delete__"><code>__delete__()</code></a>, it is considered a data descriptor. Descriptors that only define <a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/datamodel.html#object.__get__"><code>__get__()</code></a> are called non-data descriptors (they are typically used for methods but other uses are possible).</p>
+</blockquote>
+<p>如果一个 <code>descriptor</code> 只定义了 <code>__get__</code> 方法，那么就是 <code>non-data descriptor</code></p>
+<p>如果一个 <code>object</code> 定义了 <code>__set__</code> 或者 <code>__delete__</code> 方法，那么就是 <code>data descriptor</code> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataDescriptor</span>:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    包含了 __set__ 方法，所以这个类的实例是 data-descritptor</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, init_value</span>):</span></span><br><span class="line">        self.value = init_value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, instance, typ</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;DataDescriptor __get__&#x27;</span> + str(typ)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__set__</span>(<span class="params">self, instance, value</span>):</span></span><br><span class="line">        <span class="keyword">print</span> (<span class="string">&#x27;DataDescriptor __set__&#x27;</span>)</span><br><span class="line">        self.value = value</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NonDataDescriptor</span>:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    只定义了 __get__ 方法，所以这个类的实例是 non-data descriptor</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, init_value</span>):</span></span><br><span class="line">        self.value = init_value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, instance, typ</span>):</span></span><br><span class="line">        <span class="keyword">return</span><span class="string">&#x27;NonDataDescriptor __get__&#x27;</span> + str(typ)</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="3-当调用-instance-attr-时，发生了什么"><a href="#3-当调用-instance-attr-时，发生了什么" class="headerlink" title="3 当调用 instance.attr 时，发生了什么"></a>3 当调用 instance.attr 时，发生了什么</h5><p>假设 <code>cls</code> 是类，<code>instance</code> 是类 <code>cls</code> 的一个实例，当调用 <code>instance.attr</code> 时，调用流程如下</p>
+<ul>
+<li><p>如果在<code>cls</code> 或者 其基类中的 <code>__dict__</code> 找到了 <code>attr</code>，并且 <code>attr</code> 是 <code>data descriptor</code> 则调用其 <code>__get__</code>方法，即 <code>__dict__[&#39;attr&#39;].__get(instance, cls)</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span>(<span class="params">object</span>):</span></span><br><span class="line">    dd_base = DataDescriptor(<span class="number">0</span>)</span><br><span class="line">    ndd_base = NonDataDescriptor(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derive</span>(<span class="params">Base</span>):</span></span><br><span class="line">    dd_derive = DataDescriptor(<span class="number">0</span>)</span><br><span class="line">    ndd_derive = NonDataDescriptor(<span class="number">0</span>)</span><br><span class="line">    ndd_derive2 = NonDataDescriptor(<span class="number">1</span>)</span><br><span class="line">    not_descriptor_in_class = <span class="string">&quot;Derive not descriptor in class&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span>(<span class="params">self, key</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;__getattr__ with key %s in Derive&#x27;</span> % key</span><br><span class="line"></span><br><span class="line">print(Base.__dict__)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">&#x27;__module__&#x27;: &#x27;__main__&#x27;, </span></span><br><span class="line"><span class="string">&#x27;dd_base&#x27;: &lt;__main__.DataDescriptor object at 0x7fc5c5b68a58&gt;, </span></span><br><span class="line"><span class="string">&#x27;ndd_base&#x27;: &lt;__main__.NonDataDescriptor object at 0x7fc5c5b68a90&gt;, </span></span><br><span class="line"><span class="string">&#x27;__dict__&#x27;: &lt;attribute &#x27;__dict__&#x27; of &#x27;Base&#x27; objects&gt;, </span></span><br><span class="line"><span class="string">&#x27;__weakref__&#x27;: &lt;attribute &#x27;__weakref__&#x27; of &#x27;Base&#x27; objects&gt;, </span></span><br><span class="line"><span class="string">&#x27;__doc__&#x27;: None&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">print(Derive.__dict__)</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">&#123;&#x27;__module__&#x27;: &#x27;__main__&#x27;, </span></span><br><span class="line"><span class="string">&#x27;dd_derive&#x27;: &lt;__main__.DataDescriptor object at 0x7f9e74ac79b0&gt;, </span></span><br><span class="line"><span class="string">&#x27;ndd_derive&#x27;: &lt;__main__.NonDataDescriptor object at 0x7f9e74ac79e8&gt;, &#x27;same_name_attr&#x27;: &#x27;attr in class&#x27;, </span></span><br><span class="line"><span class="string">&#x27;__doc__&#x27;: None&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">b = Base()</span><br><span class="line"><span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Base&#x27;&gt;</span></span><br><span class="line">print(b.dd_base)</span><br><span class="line">d = Derive()</span><br><span class="line"><span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">print(d.dd_base)</span><br><span class="line"><span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">print(d.dd_derive)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 即使我们更改了 instance 的 __dict__ 属性，访问时仍然从 data descriptor 中读取</span></span><br><span class="line"><span class="comment"># 不会从 instance.__dict__ 中读取</span></span><br><span class="line">b.__dict__[<span class="string">&#x27;dd_base&#x27;</span>] = <span class="string">&#x27;changed in dict dd base&#x27;</span></span><br><span class="line"><span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Base&#x27;&gt;</span></span><br><span class="line">print(b.dd_base)</span><br><span class="line">d.__dict__[<span class="string">&#x27;dd_derive&#x27;</span>] = <span class="string">&#x27;changed in dict dd derive&#x27;</span></span><br><span class="line"><span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">print(d.dd_derive)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>如果 <code>attr</code> 出现在 <code>instance.__dict__</code> 中，则返回 <code>instance.__dict__[&#39;attr&#39;]</code>。否则，执行下面的流程</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更改了 instance 的 __dict__</span></span><br><span class="line"><span class="comment"># 如果访问的不是 data descriptor, 则直接中 instance.__dict__ 中读取 attr</span></span><br><span class="line">b.__dict__[<span class="string">&#x27;ndd_base&#x27;</span>] = <span class="string">&#x27;changed in dict ndd base&#x27;</span></span><br><span class="line"><span class="comment"># 打印: changed in dict ndd base</span></span><br><span class="line">print(b.ndd_base)</span><br><span class="line">d.__dict__[<span class="string">&#x27;ndd_derive&#x27;</span>] = <span class="string">&#x27;changed in dict ndd derive&#x27;</span></span><br><span class="line"><span class="comment"># 打印: changed in dict ndd derive</span></span><br><span class="line">print(d.ndd_derive)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>如果 <code>attr</code> 出现在类或者基类的 <code>__dict__</code> 中</p>
+<ul>
+<li><p>如果是 <code>non-data descriptor</code>, 则调用 <code>__get__</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印: NonDataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">print(d.ndd_derive2)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果不是 <code>descriptor</code> , 则返回 <code>__dict__[&#39;attr&#39;]</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印: Derive not descriptor in class</span></span><br><span class="line">print(d.not_descriptor_in_class)</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>如果仍未找到，如果类或者其基类有 <code>__getattr__</code> 方法，则调用 <code>__getattr__</code> 方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印: __getattr__ with key no_exist_key in Derive</span></span><br><span class="line">print(d.no_exist_key)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>否则抛出 <code>AttributeError</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    b.no_exists_key</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    <span class="comment"># 打印: True</span></span><br><span class="line">    print(isinstance(e, AttributeError))</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h5 id="4-完整测试代码"><a href="#4-完整测试代码" class="headerlink" title="4 完整测试代码"></a>4 完整测试代码</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataDescriptor</span>:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    包含了 __set__ 方法，所以这个类的实例是 data-descritptor</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, init_value</span>):</span></span><br><span class="line">        self.value = init_value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, instance, typ</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;DataDescriptor __get__&#x27;</span> + str(typ)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__set__</span>(<span class="params">self, instance, value</span>):</span></span><br><span class="line">        print(<span class="string">&#x27;DataDescriptor __set__&#x27;</span>)</span><br><span class="line">        self.value = value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NonDataDescriptor</span>:</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    只定义了 __get__ 方法，所以这个类的实例是 non-data descriptor</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, init_value</span>):</span></span><br><span class="line">        self.value = init_value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span>(<span class="params">self, instance, typ</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;NonDataDescriptor __get__&#x27;</span> + str(typ)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span>(<span class="params">object</span>):</span></span><br><span class="line">    dd_base = DataDescriptor(<span class="number">0</span>)</span><br><span class="line">    ndd_base = NonDataDescriptor(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derive</span>(<span class="params">Base</span>):</span></span><br><span class="line">    dd_derive = DataDescriptor(<span class="number">0</span>)</span><br><span class="line">    ndd_derive = NonDataDescriptor(<span class="number">0</span>)</span><br><span class="line">    ndd_derive2 = NonDataDescriptor(<span class="number">1</span>)</span><br><span class="line">    not_descriptor_in_class = <span class="string">&quot;Derive not descriptor in class&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span>(<span class="params">self, key</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;__getattr__ with key %s in Derive&#x27;</span> % key</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    b = Base()</span><br><span class="line">    <span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Base&#x27;&gt;</span></span><br><span class="line">    print(b.dd_base)</span><br><span class="line">    d = Derive()</span><br><span class="line">    <span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">    print(d.dd_base)</span><br><span class="line">    <span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">    print(d.dd_derive)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 即使我们更改了 instance 的 __dict__ 属性，访问时仍然从 data descriptor 中读取</span></span><br><span class="line">    <span class="comment"># 不会从 instance.__dict__ 中读取</span></span><br><span class="line">    b.__dict__[<span class="string">&#x27;dd_base&#x27;</span>] = <span class="string">&#x27;changed in dict dd base&#x27;</span></span><br><span class="line">    <span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Base&#x27;&gt;</span></span><br><span class="line">    print(b.dd_base)</span><br><span class="line">    d.__dict__[<span class="string">&#x27;dd_derive&#x27;</span>] = <span class="string">&#x27;changed in dict dd derive&#x27;</span></span><br><span class="line">    <span class="comment"># 打印: DataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">    print(d.dd_derive)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 更改了 instance 的 __dict__</span></span><br><span class="line">    <span class="comment"># 如果访问的不是 data descriptor, 则直接中 instance.__dict__ 中读取 attr</span></span><br><span class="line">    b.__dict__[<span class="string">&#x27;ndd_base&#x27;</span>] = <span class="string">&#x27;changed in dict ndd base&#x27;</span></span><br><span class="line">    <span class="comment"># 打印: changed in dict ndd base</span></span><br><span class="line">    print(b.ndd_base)</span><br><span class="line">    d.__dict__[<span class="string">&#x27;ndd_derive&#x27;</span>] = <span class="string">&#x27;changed in dict ndd derive&#x27;</span></span><br><span class="line">    <span class="comment"># 打印: changed in dict ndd derive</span></span><br><span class="line">    print(d.ndd_derive)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 打印: NonDataDescriptor __get__&lt;class &#x27;__main__.Derive&#x27;&gt;</span></span><br><span class="line">    print(d.ndd_derive2)</span><br><span class="line">    <span class="comment"># 打印: Derive not descriptor in class</span></span><br><span class="line">    print(d.not_descriptor_in_class)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 打印: __getattr__ with key no_exist_key</span></span><br><span class="line">    print(d.no_exist_key)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        b.no_exists_key</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="comment"># 打印: True</span></span><br><span class="line">        print(isinstance(e, AttributeError))</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="5-参考链接"><a href="#5-参考链接" class="headerlink" title="5 参考链接"></a>5 参考链接</h5><p><a target="_blank" rel="noopener" href="https://blog.peterlamut.com/2018/11/04/python-attribute-lookup-explained-in-detail/">https://blog.peterlamut.com/2018/11/04/python-attribute-lookup-explained-in-detail/</a><br><a target="_blank" rel="noopener" href="https://docs.python.org/3/howto/descriptor.html">https://docs.python.org/3/howto/descriptor.html</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xybaby/p/6270551.html">https://www.cnblogs.com/xybaby/p/6270551.html</a></p>
+<h5 id="6-转载一下调用流程图片"><a href="#6-转载一下调用流程图片" class="headerlink" title="6 转载一下调用流程图片"></a>6 转载一下调用流程图片</h5><p>图片是从参考链接的第一个博客中复制的，把调用的流程描述的很清晰，值得一看<br><img src="https://upload-images.jianshu.io/upload_images/10849491-ed6a9ba736284fd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Bottle 0.4.10 源码学习</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Python学习记录</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2020/11/14/Attribute-Lookup-%E5%BD%93%E8%AE%BF%E9%97%AE%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%B1%9E%E6%80%A7%E6%97%B6%EF%BC%8C%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-10-31T09:21:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-31</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/11/14/cached-property%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%89%A9%E5%B1%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">cached_property的实现及扩展</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/10/31/Bottle-Template-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Bottle Template 源码分析</a>
-    </h1>
+    <section id="comments" class="comments">
+      <style>
+        .comments{margin:30px;padding:10px;background:#fff}
+        @media screen and (max-width:800px){.comments{margin:auto;padding:10px;background:#fff}}
+      </style>
+      <div id="vcomment" class="comment"></div> 
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+   var notify = 'true' == true ? true : false;
+   var verify = 'true' == true ? true : false;
+    window.onload = function() {
+        new Valine({
+            el: '.comment',
+            notify: notify,
+            verify: verify,
+            app_id: "GEbkfWdFeTPVcMleIckNzdwS-gzGzoHsz",
+            app_key: "ubr3qslQqDknmhRMhRuLXmoX",
+            placeholder: "表扬批评，都很欢迎. 知我罪我 一任诸君",
+            avatar:"retro"
+        });
+    }
+</script>
+
+  </section>
+
+  
+  <div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="Attribute-Lookup-当访问实例的属性时，发生了什么" data-title="Attribute Lookup: 当访问实例的属性时，发生了什么" data-url="http://example.com/2020/11/14/Attribute-Lookup-%E5%BD%93%E8%AE%BF%E9%97%AE%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%B1%9E%E6%80%A7%E6%97%B6%EF%BC%8C%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+  
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Bottle 0.4.10 源码学习</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -253,8 +436,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
